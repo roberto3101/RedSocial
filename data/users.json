@@ -1,0 +1,42 @@
+[
+  {
+    "id": "daeb182f-cbf1-439b-8a39-d5657d9191c4",
+    "email": "jose0686534@gmail.com",
+    "hash": "$2b$10$RW0psfBl8gLkuP7ejrtmVOIAyZ748xn2BCNwa1Znv0zeeoSzGN4D6",
+    "verified": false,
+    "code": "513507"
+  },
+  {
+    "id": "e2461824-ce54-40e3-b07b-2efef39d97fb",
+    "email": "carroplateado3101@gmail.com",
+    "hash": "$2b$10$L/5uHhKkjGfh3xgTkhXvau0RTTq.MBIir707m4aDnOSHpe6NwNNum",
+    "verified": true,
+    "code": "746826"
+  },
+  {
+    "id": "812e88eb-b8f3-49ba-a7fc-c59f52ea984d",
+    "email": "ledezmajosefinha@gmail.com",
+    "hash": "$2b$10$2d1ngFfAE6xD/0CayqjecusvjXWGHC.QHvL3fe8jGssnepEKnxA56",
+    "verified": true,
+    "code": "514875"
+  },
+  {
+    "id": "113156840015652706854",
+    "email": "jose0686534@gmail.com",
+    "verified": true,
+    "oauth": "google"
+  },
+  {
+    "id": "1165354328613199",
+    "email": "jose068651@gmail.com",
+    "verified": true,
+    "oauth": "facebook"
+  },
+  {
+    "id": "3a6f5ccb-f697-4adc-a2fd-ea96b9a11a06",
+    "email": "ledezmajosefinhxa@gmail.com",
+    "hash": "$2b$10$2jH/fvDF.LIlUk3uLBmOHuDp/kXYsC1pLswwJSZpqUK/CU9hkeg6W",
+    "verified": false,
+    "code": "942995"
+  }
+]

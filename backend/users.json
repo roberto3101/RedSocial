@@ -1,0 +1,21 @@
+[
+  {
+    "id": "1165354328613199",
+    "email": "jose068651@gmail.com",
+    "verified": true,
+    "oauth": "facebook"
+  },
+  {
+    "id": "113156840015652706854",
+    "email": "jose0686534@gmail.com",
+    "verified": true,
+    "oauth": "google"
+  },
+  {
+    "id": "025ad428-4b6f-4b25-8aee-0cd674445949",
+    "email": "jose0686532@gmail.com",
+    "hash": "$2b$10$./5p9MePSnPWNUCMET9PNOimHs3YoLdH0qyOOF17omP2WQvA9h3Jq",
+    "verified": false,
+    "code": "212120"
+  }
+]
