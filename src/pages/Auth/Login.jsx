@@ -1,24 +1,23 @@
-/* ─── src/pages/Auth/Login.jsx ──────────────────────────────────────────── */
-import { useState, useRef, useEffect }      from "react";
-import { Link, useNavigate }                from "react-router-dom";
-import axios                                from "axios";
-import { useAuth }                          from "../../context/AuthContext";   // 👈 NUEVO
+// src/pages/Auth/Login.jsx
+import { useState, useRef, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useAuth } from "../../context/AuthContext";
+import { useProfile } from "../../context/ProfileContext";
 
 export default function Login() {
-  /* ─────────── ESTADO ─────────── */
-  const [form,    setForm]    = useState({ email: "", password: "" });
-  const [error,   setError]   = useState("");
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const navigate     = useNavigate();
+  const navigate = useNavigate();
   const cancelSource = useRef(null);
-  const { login }    = useAuth();                                             // 👈 NUEVO
+  const { login } = useAuth();
+  const { setProfile } = useProfile();
 
-  /* ─────────── HANDLERS ─────────── */
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  /* -------- Enviar credenciales -------- */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -36,17 +35,29 @@ export default function Login() {
         `${import.meta.env.VITE_API_URL}/auth/login`,
         form,
         {
-          withCredentials : false,                        // usa true si sirves JWT en cookie
-          cancelToken     : cancelSource.current.token,
+          withCredentials: false,
+          cancelToken: cancelSource.current.token,
         }
       );
 
-      /* token OK → actualizar contexto y redirigir */
-      login(data.token);                                  // 👈  AHORA mediante el helper
-      navigate("/create-profile");
+      login(data.token);
+
+      const { data: profile } = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/profile`,
+        {
+          headers: { Authorization: `Bearer ${data.token}` },
+        }
+      );
+
+      if (profile && profile.username) {
+        const username = profile.username.toLowerCase().trim();
+        setProfile(profile);
+        navigate(`/profile/${username}`);
+      } else {
+        navigate("/create-profile");
+      }
     } catch (err) {
       if (axios.isCancel(err)) return;
-
       const msg =
         err.response?.data?.msg ||
         (err.response?.status === 500
@@ -58,20 +69,16 @@ export default function Login() {
     }
   };
 
-  /* -------------- OAuth -------------- */
   const oauthLogin = (provider) =>
     (window.location.href = `${import.meta.env.VITE_API_URL}/auth/${provider}`);
 
-  /* Abort si el componente se desmonta */
   useEffect(() => () => cancelSource.current?.cancel(), []);
 
-  /* ─────────── UI ─────────── */
   return (
     <main className="login-page">
       <div className="login-card">
         <h1>Iniciar sesión</h1>
 
-        {/* ---------- Login clásico ---------- */}
         <form onSubmit={handleSubmit} className="login-form">
           <label>
             Correo electrónico
@@ -104,12 +111,10 @@ export default function Login() {
           </button>
         </form>
 
-        {/* ---------- Separador ---------- */}
         <div className="divider">
           <span>o inicia sesión con</span>
         </div>
 
-        {/* ---------- Botones OAuth ---------- */}
         <div className="oauth-buttons">
           <button
             className="oauth-btn google"

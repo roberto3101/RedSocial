@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { RichTextEditor } from "@mantine/rte";
 import DOMPurify from "dompurify";
+import { useProfile } from "../../context/ProfileContext";
 
 export default function PostForm() {
   const [formData, setFormData] = useState({
@@ -13,6 +14,7 @@ export default function PostForm() {
   });
 
   const navigate = useNavigate();
+  const { profile } = useProfile(); // ← usa el perfil autenticado
 
   useEffect(() => {
     const traducciones = {
@@ -38,7 +40,6 @@ export default function PostForm() {
       "Subscript": "Subíndice",
       "Superscript": "Superíndice"
     };
-
     const interval = setInterval(() => {
       const buttons = document.querySelectorAll(".my-rich-editor button, .my-rich-editor span");
       buttons.forEach((btn) => {
@@ -48,7 +49,6 @@ export default function PostForm() {
         }
       });
     }, 600);
-
     return () => clearInterval(interval);
   }, []);
 
@@ -61,9 +61,11 @@ export default function PostForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    if (!profile?.username) {
+      alert("Error: Debes tener un perfil con nombre de usuario para publicar.");
+      return;
+    }
     try {
-      // Verificar si ya existe un artículo con ese slug
       const resSlug = await fetch("http://localhost:3001/api/posts");
       const posts = await resSlug.json();
       const slugExists = posts.some((p) => p.slug === formData.slug);
@@ -73,16 +75,24 @@ export default function PostForm() {
         return;
       }
 
-      // Si es único, guardar
+      // Solo manda los datos del formulario, el backend añade el author
+      const dataToSend = { ...formData };
+
+      const token = localStorage.getItem("jwt");
       const res = await fetch("http://localhost:3001/api/posts", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(dataToSend),
       });
 
       if (!res.ok) throw new Error("Error al guardar el artículo");
       alert("✅ Artículo guardado correctamente");
-      navigate("/blog");
+
+      // Redirige al blog personal del usuario
+      navigate(`/blog/user/${profile.username}`);
 
     } catch (err) {
       console.error(err);
@@ -93,13 +103,11 @@ export default function PostForm() {
   const insertYouTubeVideo = () => {
     const url = prompt("Pega el enlace de YouTube:");
     if (!url) return;
-
     const match = url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w\-]+)/);
     if (!match || !match[1]) {
       alert("URL inválida");
       return;
     }
-
     const videoId = match[1];
     const embedHtml = `
       <div style="text-align:center; margin: 1em 0;">
@@ -108,7 +116,6 @@ export default function PostForm() {
           frameborder="0" allowfullscreen style="max-width:100%; border-radius: 8px;">
         </iframe>
       </div>`;
-
     setFormData((prev) => ({
       ...prev,
       body: prev.body + embedHtml,
@@ -117,13 +124,8 @@ export default function PostForm() {
 
   return (
     <>
-
-
-    
       <section className="form-wrapper">
-        
         <h2 className="form-title">📝 Crear nuevo artículo</h2>
-
         <form onSubmit={handleSubmit} className="form-post">
           <div className="field-group">
             <label>Título</label>
@@ -135,7 +137,6 @@ export default function PostForm() {
               required
             />
           </div>
-
           <div className="field-group">
             <label>Slug (URL)</label>
             <input
@@ -146,7 +147,6 @@ export default function PostForm() {
               required
             />
           </div>
-
           <div className="field-group">
             <label>Fecha de publicación</label>
             <input
@@ -157,7 +157,6 @@ export default function PostForm() {
               required
             />
           </div>
-
           <div className="field-group">
             <label>Descripción breve</label>
             <textarea
@@ -169,7 +168,6 @@ export default function PostForm() {
               required
             />
           </div>
-
           <div className="field-group">
             <label>Contenido principal</label>
             <RichTextEditor
@@ -179,7 +177,6 @@ export default function PostForm() {
               className="my-rich-editor"
             />
           </div>
-
           <div className="btn-group">
             <button
               type="button"
@@ -188,14 +185,12 @@ export default function PostForm() {
             >
               🎥 Insertar video de YouTube
             </button>
-
             <button type="submit" className="btn-primary">
               💾 Guardar artículo
             </button>
           </div>
         </form>
       </section>
-
       <section className="preview-panel">
         <h3>Vista previa en tiempo real</h3>
         <div
@@ -206,5 +201,3 @@ export default function PostForm() {
     </>
   );
 }
-// src/pages/Blog/PostForm.jsx
-// Aquí definimos el formulario para crear o editar un artículo del blog        

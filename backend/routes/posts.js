@@ -1,25 +1,35 @@
-// backend/routes/posts.js
 import { Router } from "express";
 import fs from "fs";
 import path from "path";
 import { marked } from "marked";
+import { verifyToken } from "../middleware/auth.js";
 
 const router = Router();
 const filePath = path.resolve("data/posts.json");
 
-// Función auxiliar
 const readPosts = () => {
   const data = fs.readFileSync(filePath, "utf-8");
   return JSON.parse(data);
 };
+const writePosts = (posts) => {
+  fs.writeFileSync(filePath, JSON.stringify(posts, null, 2));
+};
 
-// Leer todos los posts
+// --- Blog principal (todos los posts, filtra luego si quieres solo admin)
 router.get("/", (req, res) => {
   const posts = readPosts();
   res.json(posts);
 });
 
-// Obtener un post por slug
+// --- Blog personal de cada usuario
+router.get("/user/:username", (req, res) => {
+  const posts = readPosts();
+  const { username } = req.params;
+  const filtered = posts.filter((p) => p.author === username);
+  res.json(filtered);
+});
+
+// --- Un solo post por slug (público)
 router.get("/:slug", (req, res) => {
   const { slug } = req.params;
   const posts = readPosts();
@@ -34,40 +44,67 @@ router.get("/:slug", (req, res) => {
   res.json({ ...post, html, minutes });
 });
 
-// Agregar un nuevo post
-router.post("/", (req, res) => {
-  const newPost = req.body;
+// --- Crear nuevo post (PROTEGIDO)
+router.post("/", verifyToken, (req, res) => {
   const posts = readPosts();
+  const { username } = req.user;
+
+  if (!username) {
+    return res.status(400).json({ message: "Tu perfil no tiene username." });
+  }
+
+  const newPost = {
+    ...req.body,
+    author: username // Siempre fuerza el author con el username real
+  };
 
   posts.push(newPost);
-  fs.writeFileSync(filePath, JSON.stringify(posts, null, 2));
+  writePosts(posts);
   res.status(201).json({ message: "Artículo creado." });
 });
 
-// Editar un post existente
-router.put("/:slug", (req, res) => {
+// --- Editar post existente (solo autor)
+router.put("/:slug", verifyToken, (req, res) => {
   const { slug } = req.params;
+  const { username } = req.user;
   const updatedPost = req.body;
 
   const posts = readPosts();
   const index = posts.findIndex((p) => p.slug === slug);
+
   if (index === -1) return res.status(404).json({ message: "Artículo no encontrado." });
 
-  posts[index] = { ...posts[index], ...updatedPost };
-  fs.writeFileSync(filePath, JSON.stringify(posts, null, 2));
+  // Solo el autor puede editar
+  if (posts[index].author !== username) {
+    return res.status(403).json({ message: "No tienes permisos para editar este post." });
+  }
+
+  posts[index] = { ...posts[index], ...updatedPost, author: username };
+  writePosts(posts);
 
   res.json({ message: "Artículo actualizado." });
 });
 
-// Eliminar un post
-router.delete("/:slug", (req, res) => {
+// --- Eliminar post existente (solo autor)
+router.delete("/:slug", verifyToken, (req, res) => {
   const { slug } = req.params;
+  const { username } = req.user;
 
-  let posts = readPosts();
-  posts = posts.filter((p) => p.slug !== slug);
-  fs.writeFileSync(filePath, JSON.stringify(posts, null, 2));
+  const posts = readPosts();
+  const index = posts.findIndex((p) => p.slug === slug);
+
+  if (index === -1) return res.status(404).json({ message: "Artículo no encontrado." });
+
+  // Solo el autor puede eliminar
+  if (posts[index].author !== username) {
+    return res.status(403).json({ message: "No tienes permisos para eliminar este post." });
+  }
+
+  posts.splice(index, 1);
+  writePosts(posts);
 
   res.json({ message: "Artículo eliminado." });
 });
 
 export default router;
+// backend/routes/posts.js

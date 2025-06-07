@@ -1,30 +1,66 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";          // 👈
+import { useNavigate, useSearchParams } from "react-router-dom";
+import axios from "axios";
+import { useAuth } from "../../context/AuthContext";
+import { useProfile } from "../../context/ProfileContext";
 
 export default function OAuthSuccess() {
-  const { login } = useAuth();                                // 👈
-  const navigate  = useNavigate();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { login } = useAuth();
+  const { setProfile } = useProfile();
 
   useEffect(() => {
-    const token = new URLSearchParams(window.location.search).get("token");
-    if (token) {
-      login(token);                                           // 🔥 avisa al contexto
-      // limpia hash de Facebook
-      if (window.location.hash === "#_=_") {
-        window.history.replaceState(null, "", window.location.pathname);
-      }
-      navigate("/create-profile", { replace: true });
-    } else {
-      navigate("/login", { replace: true });
+    const token = searchParams.get("token");
+    
+    if (!token) {
+      navigate("/login");
+      return;
     }
-  }, [login, navigate]);
+
+    const handleOAuthSuccess = async () => {
+      try {
+        // Guardar token
+        login(token);
+
+        // Consultar perfil
+        const { data: profile } = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/profile`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        // Verificar si hay perfil completo
+        const hasProfile = profile && Object.keys(profile).length > 0 && profile.username;
+        
+        if (hasProfile) {
+          setProfile(profile);
+          // Verificar si el perfil público existe
+          try {
+            await axios.get(
+              `${import.meta.env.VITE_API_URL}/api/profile/${profile.username}`
+            );
+            navigate(`/profile/${profile.username}`);
+          } catch {
+            navigate("/create-profile");
+          }
+        } else {
+          setProfile(null);
+          navigate("/create-profile");
+        }
+      } catch (error) {
+        console.error("Error en OAuth success:", error);
+        navigate("/login");
+      }
+    };
+
+    handleOAuthSuccess();
+  }, [searchParams, navigate, login, setProfile]);
 
   return (
-    <main style={{ padding: "4rem", textAlign: "center" }}>
-      <h1>Procesando inicio de sesión…</h1>
-    </main>
+    <div className="oauth-success">
+      <p>Procesando autenticación...</p>
+    </div>
   );
 }
-// Este componente se usa para manejar el éxito de OAuth
-// y redirigir al usuario a la creación de perfil o al login.

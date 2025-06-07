@@ -1,10 +1,10 @@
 [
   {
-    "id": "daeb182f-cbf1-439b-8a39-d5657d9191c4",
+    "id": "fda22a59-1dbe-4366-a057-50daac5a3a24",
     "email": "jose0686534@gmail.com",
-    "hash": "$2b$10$RW0psfBl8gLkuP7ejrtmVOIAyZ748xn2BCNwa1Znv0zeeoSzGN4D6",
-    "verified": false,
-    "code": "513507"
+    "hash": "$2b$10$umV9R4F9bLLF0jze0fTd5uaCnWNBGrCjiFq9CynmDz1kfeZnorWY2",
+    "verified": true,
+    "code": "837326"
   },
   {
     "id": "e2461824-ce54-40e3-b07b-2efef39d97fb",
@@ -14,11 +14,32 @@
     "code": "746826"
   },
   {
+    "id": "c293b55e-509f-412d-9e94-563e921f1f56",
+    "email": "logistica3101@gmail.com",
+    "hash": "$2b$10$h9qWiEVLLXQB0WDwnNRs7e09NMf5GqTxo9rPFc1ltmF0Fi4DWFqTG",
+    "verified": true,
+    "code": "597025"
+  },
+  {
     "id": "812e88eb-b8f3-49ba-a7fc-c59f52ea984d",
     "email": "ledezmajosefinha@gmail.com",
     "hash": "$2b$10$2d1ngFfAE6xD/0CayqjecusvjXWGHC.QHvL3fe8jGssnepEKnxA56",
     "verified": true,
     "code": "514875"
+  },
+  {
+    "id": "3a6f5ccb-f697-4adc-a2fd-ea96b9a11a06",
+    "email": "ledezmajosefinhxa@gmail.com",
+    "hash": "$2b$10$2jH/fvDF.LIlUk3uLBmOHuDp/kXYsC1pLswwJSZpqUK/CU9hkeg6W",
+    "verified": false,
+    "code": "942995"
+  },
+  {
+    "id": "feecac1a-0878-4092-810b-66a27e042ef0",
+    "email": "tellojesus728@gmail.com",
+    "hash": "$2b$10$8SaA1FCojkV//37faBPree5GOekDxvkfSc6cbClQMm1W2JSvZ/CZ.",
+    "verified": true,
+    "code": "940893"
   },
   {
     "id": "113156840015652706854",
@@ -31,12 +52,5 @@
     "email": "jose068651@gmail.com",
     "verified": true,
     "oauth": "facebook"
-  },
-  {
-    "id": "3a6f5ccb-f697-4adc-a2fd-ea96b9a11a06",
-    "email": "ledezmajosefinhxa@gmail.com",
-    "hash": "$2b$10$2jH/fvDF.LIlUk3uLBmOHuDp/kXYsC1pLswwJSZpqUK/CU9hkeg6W",
-    "verified": false,
-    "code": "942995"
   }
 ]

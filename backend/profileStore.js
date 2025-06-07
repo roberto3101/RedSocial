@@ -1,25 +1,39 @@
+// CAMBIO EN profileStore.js
+
 import fs from "fs/promises";
-import { dirname } from "path";
+import path from "path";
 import { fileURLToPath } from "url";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const file = `${__dirname}/profiles.json`;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// ✅ corregido: archivo ahora en /backend/data/profiles.json
+const file = path.join(__dirname, "data", "profiles.json");
 
 async function read() {
-  try { return JSON.parse(await fs.readFile(file, "utf8")); }
-  catch { return []; }
+  try {
+    return JSON.parse(await fs.readFile(file, "utf8"));
+  } catch {
+    return [];
+  }
 }
+
 async function write(data) {
   await fs.writeFile(file, JSON.stringify(data, null, 2));
 }
 
 export async function getProfileById(id) {
-  return (await read()).find(p => p.userId === id);
+  return (await read()).find((p) => p.userId === id);
 }
+
 export async function upsertProfile(profile) {
   const list = await read();
-  const idx  = list.findIndex(p => p.userId === profile.userId);
+  const idx = list.findIndex((p) => p.userId === profile.userId);
   if (idx >= 0) list[idx] = { ...list[idx], ...profile };
   else list.push(profile);
   await write(list);
+}
+
+export async function getProfileByUsername(username) {
+  return (await read()).find((p) => p.username?.toLowerCase() === username.toLowerCase());
 }

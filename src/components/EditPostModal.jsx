@@ -1,10 +1,9 @@
+// src/components/EditPostModal.jsx
 import { useEffect, useState } from "react";
 import Modal from "react-modal";
 import { RichTextEditor } from "@mantine/rte";
 Modal.setAppElement("#root");
-Modal.defaultStyles.overlay.zIndex = 100; // Asegura que el modal quede debajo del cursor
-
-
+Modal.defaultStyles.overlay.zIndex = 100;
 
 export default function EditPostModal({ isOpen, onClose, post, onSave }) {
   const [formData, setFormData] = useState({
@@ -16,9 +15,7 @@ export default function EditPostModal({ isOpen, onClose, post, onSave }) {
   });
 
   useEffect(() => {
-    if (post) {
-      setFormData(post);
-    }
+    if (post) setFormData(post);
   }, [post]);
 
   if (!post) return null;
@@ -29,16 +26,17 @@ export default function EditPostModal({ isOpen, onClose, post, onSave }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
+      const token = localStorage.getItem("jwt");
       const res = await fetch(`http://localhost:3001/api/posts/${post.slug}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
         body: JSON.stringify(formData)
       });
-
       if (!res.ok) throw new Error("Error al actualizar el artículo");
-
       alert("✅ Artículo actualizado.");
       onSave();
       onClose();

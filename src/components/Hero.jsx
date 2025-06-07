@@ -1,44 +1,37 @@
-// ─── src/components/Hero.jsx ───────────────────────────
 import React from "react";
-import { Link } from "react-router-dom";
 import rob from "/imagenes/rob.jpg";
+import { useProfile } from "../context/ProfileContext";
 
-export default function Hero() {
+export default function Hero({ profile: profileProp }) {
+  const contextProfile = useProfile().profile;
+  const profile = profileProp || contextProfile;
+
+  const avatarSrc = profile?.avatar || rob;
+  const firstName = profile?.firstName || "Roberto";
+  const cvUrl = profile?.cv || "/cvEsp.pdf";
+
   return (
     <section className="hero">
       <div className="container hero-inner">
-
-        {/* FOTO */}
         <div className="hero-img" role="img" aria-label="Foto de Roberto">
-          <img src={rob} alt="Roberto sonriente" loading="lazy" />
+          <img src={avatarSrc} alt="Foto de perfil" loading="lazy" />
         </div>
-
-        {/* TEXTO + CTAs */}
         <div className="hero-text">
           <h1>
-            Hola, soy <span className="hilite">Roberto</span>{" "}
-            <span className="wave">👋</span>
+            Hola, soy <span className="hilite">{firstName}</span> <span className="wave">👋</span>
           </h1>
-
           <p className="subtitle">
-            Full-Stack Developer · Web Performance Enthusiast · Mentor de futuros devs.
+            {profile?.about?.slice(0, 120) ||
+              "Full-Stack Developer · Web Performance Enthusiast · Mentor de futuros devs."}
           </p>
-
           <div className="btn-group">
-            {/* 🔗 Ahora va al índice de blog en /blog */}
-            <Link to="/blog" className="btn-cta">
-              Leer el blog
-            </Link>
-
-            {/* descarga CV */}
+            <a href="/blog" className="btn-cta">Leer el blog</a>
             <a
-              href="/cvEsp.pdf"
+              href={cvUrl}
               className="btn-outline"
               target="_blank"
               rel="noopener noreferrer"
-            >
-              Descargar CV
-            </a>
+            >Descargar CV</a>
           </div>
         </div>
       </div>

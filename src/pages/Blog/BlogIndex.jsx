@@ -3,16 +3,24 @@ import PostCard from "../../components/PostCard";
 import { useEffect, useState } from "react";
 import { getPosts } from "../../lib/posts";
 import EditPostModal from "../../components/EditPostModal";
+import { useProfile } from "../../context/ProfileContext";
+
+// <---- AQUÍ DEFINES EL USERNAME DEL OWNER (ajústalo a tu caso)
+const OWNER_USERNAME = "rocos2";
 
 export default function BlogIndex() {
   const [posts, setPosts] = useState([]);
   const [postToEdit, setPostToEdit] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const { profile } = useProfile();
 
+  // Solo muestra los posts del dueño principal
   const fetchPosts = () => {
     getPosts().then((data) => {
       const seen = new Set();
       const filtered = data.filter((post) => {
+        // Solo posts del OWNER
+        if (post.author !== OWNER_USERNAME) return false;
         if (seen.has(post.slug)) return false;
         seen.add(post.slug);
         return true;
@@ -25,12 +33,18 @@ export default function BlogIndex() {
     fetchPosts();
   }, []);
 
+  // Solo el dueño real puede hacer CRUD
+  const isOwner = (post) => profile?.username === OWNER_USERNAME && post.author === OWNER_USERNAME;
+
   const deletePost = async (slug) => {
     if (!confirm("¿Estás seguro de eliminar este artículo?")) return;
-
     try {
+      const token = localStorage.getItem("jwt");
       const res = await fetch(`http://localhost:3001/api/posts/${slug}`, {
-        method: "DELETE"
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
       });
       if (!res.ok) throw new Error("Error al eliminar");
       alert("✅ Artículo eliminado");
@@ -54,34 +68,39 @@ export default function BlogIndex() {
     }
   };
 
-  const isAdmin = true;
-
   return (
     <section className="posts-preview">
       <div className="container">
-        <Link to="/" className="btn-outline">← Volver</Link>
-
+        <Link
+          to={profile?.username ? `/profile/${profile.username}` : "/"}
+          className="btn-outline"
+        >
+          ← Volver
+        </Link>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <h2>Blog</h2>
-          {isAdmin && (
+          {/* Solo el dueño puede ver el botón */}
+          {profile?.username === OWNER_USERNAME && (
             <Link to="/blog/nuevo" className="btn-primary">+ Nuevo artículo</Link>
           )}
         </div>
-
         <div className="posts-grid">
+          {posts.length === 0 && (
+            <p style={{ opacity: 0.6, marginTop: "2em" }}>
+              Aún no se han publicado artículos en el blog principal.
+            </p>
+          )}
           {posts.map((p, index) => (
             <div key={`${p.slug}-${index}`} className="post-card">
-              <PostCard {...p} />
-              {isAdmin && (
-                <div className="btn-group">
-                  <button onClick={() => openEditModal(p)} className="btn-outline">🦖 Editar</button>
-                  <button onClick={() => deletePost(p.slug)} className="btn-delete">🗑️ Eliminar</button>
-                </div>
-              )}
+              <PostCard
+                {...p}
+                isOwner={isOwner(p)}
+                onEdit={() => openEditModal(p)}
+                onDelete={deletePost}
+              />
             </div>
           ))}
         </div>
-
         {modalOpen && postToEdit && (
           <EditPostModal
             isOpen={modalOpen}
@@ -94,3 +113,4 @@ export default function BlogIndex() {
     </section>
   );
 }
+// Asegúrate de que el CSS esté importado en tu archivo principal o en el componente

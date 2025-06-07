@@ -35,3 +35,7 @@ export function AuthProvider({ children }) {
     </AuthCtx.Provider>
   );
 }
+
+
+//src\context\AuthContext.jsx// Este contexto maneja la autenticación del usuario.
+// Proporciona un token JWT y funciones para iniciar y cerrar sesión.

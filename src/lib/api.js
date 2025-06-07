@@ -29,3 +29,4 @@ export async function deletePost(id) {
   });
   return await res.json();
 }
+//src\lib\api.js

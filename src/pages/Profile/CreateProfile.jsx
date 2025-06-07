@@ -1,29 +1,50 @@
-// ─── src/pages/Profile/CreateProfile.jsx ────────────────────────────────
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useProfile } from "../../context/ProfileContext";
+import { useAuth } from "../../context/AuthContext";
 
 export default function CreateProfile() {
   const navigate = useNavigate();
-  const [preview, setPreview] = useState(null);          // miniatura avatar
-  const [avatar, setAvatar]   = useState(null);          // File
+  const { profile, setProfile } = useProfile();
+  const { token } = useAuth();
+
+  /* --- estado local --- */
+  const [preview, setPreview] = useState(null);
+  const [avatar, setAvatar]   = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState("");
 
-  /* todos los campos del formulario */
   const [form, setForm] = useState({
-    username: "",
+    username:  "",
     firstName: "",
-    lastName: "",
-    phone: "",
-    email: "",            // se mostrará con valor por defecto
-    website: "",
+    lastName:  "",
+    phone:     "",
+    email:     "",
+    website:   "",
     languages: "",
     interests: "",
-    about: "",
+    about:     "",
   });
 
-  /* ----------- helpers ----------- */
+  /* Prefill cuando ya hay perfil */
+  useEffect(() => {
+    if (!profile) return;
+    setForm({
+      username:  profile.username  || "",
+      firstName: profile.firstName || "",
+      lastName:  profile.lastName  || "",
+      phone:     profile.phone     || "",
+      email:     profile.email     || "",
+      website:   profile.website   || "",
+      languages: profile.languages || "",
+      interests: profile.interests || "",
+      about:     profile.about     || "",
+    });
+    if (profile.avatar) setPreview(profile.avatar);
+  }, [profile]);
+
+  /* --------- helpers --------- */
   const handleFile = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -32,17 +53,25 @@ export default function CreateProfile() {
   };
 
   const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
-  /* ----------- submit ----------- */
+  /* --------- submit --------- */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
+    if (!token) {
+      setError("No estás autenticado");
+      setLoading(false);
+      return;
+    }
+
+    const authHeader = { Authorization: `Bearer ${token}` };
+
     try {
-      /* 1) sube la imagen (si hay) */
-      let avatarUrl = "";
+      /* 1) sube imagen si la cambió */
+      let avatarUrl = profile?.avatar || "";
       if (avatar) {
         const fd = new FormData();
         fd.append("image", avatar);
@@ -50,42 +79,49 @@ export default function CreateProfile() {
           `${import.meta.env.VITE_API_URL}/api/upload-image`,
           fd,
           {
-            headers: { "Content-Type": "multipart/form-data" },
+            headers: {
+              ...authHeader,
+              "Content-Type": "multipart/form-data",
+            },
           }
         );
         avatarUrl = data.url;
       }
 
-      /* 2) envía el perfil */
-      await axios.post(
+      /* 2) upsert perfil (POST /api/profile) */
+      const { data: saved } = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/profile`,
         { ...form, avatar: avatarUrl },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("jwt")}`,
-          },
-        }
+        { headers: authHeader }
       );
 
-      /* 3) ¡listo! */
-      navigate("/"); // o a tu página de perfil
+      /* 3) actualiza contexto */
+      setProfile(saved);
+
+      /* 4) redirige al perfil público */
+      if (saved.username) {
+        navigate(`/profile/${saved.username}`);
+      } else {
+        navigate("/");
+      }
     } catch (err) {
       console.error(err);
       setError(
-        err.response?.data?.msg || "No se pudo guardar el perfil. Intenta luego."
+        err.response?.data?.msg ||
+          "No se pudo guardar el perfil. Intenta luego."
       );
     } finally {
       setLoading(false);
     }
   };
 
-  /* ----------- UI ----------- */
+  /* --------- UI --------- */
   return (
     <main className="container create-profile">
-      <h1>Completa tu perfil</h1>
+      <h1>{profile ? "Editar" : "Completa"} tu perfil</h1>
 
       <form onSubmit={handleSubmit} className="profile-form">
-        {/* AVATAR ---------------------------------------------------- */}
+        {/* AVATAR */}
         <div className="avatar-field">
           <label className="avatar-label">
             {preview ? (
@@ -98,7 +134,7 @@ export default function CreateProfile() {
           <p>Foto de perfil</p>
         </div>
 
-        {/* DATOS BÁSICOS -------------------------------------------- */}
+        {/* DATOS BÁSICOS */}
         <div className="grid two-cols">
           <label>
             Nombre(s)
@@ -141,11 +177,7 @@ export default function CreateProfile() {
 
         <label>
           Teléfono
-          <input
-            name="phone"
-            value={form.phone}
-            onChange={handleChange}
-          />
+          <input name="phone" value={form.phone} onChange={handleChange} />
         </label>
 
         <label>
@@ -158,7 +190,6 @@ export default function CreateProfile() {
           />
         </label>
 
-        {/* CAMPOS MULTILÍNEA ---------------------------------------- */}
         <label>
           Idiomas
           <input
