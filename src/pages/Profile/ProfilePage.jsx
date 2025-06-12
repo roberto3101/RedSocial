@@ -1,4 +1,3 @@
-// src/pages/Profile/ProfilePage.jsx
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -12,12 +11,21 @@ import Footer from "../../components/Footer";
 import CustomCursor from "../../components/CustomCursor";
 import CaveLink from "../../components/CaveLink";
 import EditPostModal from "../../components/EditPostModal";
+import { useProfile } from "../../context/ProfileContext";
 
 export default function ProfilePage() {
   const { username } = useParams();
   const [profile, setProfile] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+
+  // Trae el perfil del usuario logueado (desde contexto)
+  const { profile: loggedProfile } = useProfile();
+  const isOwnProfile =
+    loggedProfile &&
+    loggedProfile.username &&
+    username &&
+    loggedProfile.username.toLowerCase() === username.toLowerCase();
 
   useEffect(() => {
     (async () => {
@@ -36,19 +44,20 @@ export default function ProfilePage() {
   }, [username]);
 
   if (loading) return <p>Cargando perfil...</p>;
-  if (error)   return <p>{error}</p>;
+  if (error) return <p>{error}</p>;
 
   return (
     <>
       <Navbar profile={profile} />
-      <Hero profile={profile} />
+      <Hero profile={profile} isOwnProfile={isOwnProfile} />
       <PostSection username={profile.username} />
-      <About profile={profile} />
+      <About profile={profile} isOwnProfile={isOwnProfile} />
       <Contact profile={profile} />
       <Footer />
       <CustomCursor />
       <CaveLink />
-      <EditPostModal />
+      {/* Solo muestra el modal de edición si es tu propio perfil */}
+      {isOwnProfile && <EditPostModal />}
     </>
   );
 }

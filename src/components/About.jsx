@@ -20,8 +20,12 @@ export default function About({ profile: profileProp }) {
     ? profile.languages.split(",").map((t) => t.trim())
     : ["React", "Node.js", "Java", "MySQL", "Javascript", "SQL Server"];
 
-  // Solo permite editar si está logeado
-  const isOwner = !!localStorage.getItem("jwt");
+  // Solo permite editar si está logeado **Y** está viendo su propio perfil
+  const isOwner =
+    !!localStorage.getItem("jwt") &&
+    profile?.username &&
+    contextProfile?.username &&
+    profile.username === contextProfile.username;
 
   return (
     <section id="about" className="about">

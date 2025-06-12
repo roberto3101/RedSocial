@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import PostCard from "../../components/PostCard";
 import { useEffect, useState } from "react";
 import { getPosts } from "../../lib/posts";
@@ -13,6 +13,9 @@ export default function BlogIndex() {
   const [postToEdit, setPostToEdit] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const { profile } = useProfile();
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // Solo muestra los posts del dueño principal
   const fetchPosts = () => {
@@ -68,15 +71,28 @@ export default function BlogIndex() {
     }
   };
 
+  // Lógica para volver atrás
+  function handleBack(e) {
+    e.preventDefault();
+    if (location.key !== "default") {
+      navigate(-1);
+    } else if (profile?.username) {
+      navigate(`/profile/${profile.username}`, { replace: true });
+    } else {
+      navigate("/", { replace: true });
+    }
+  }
+
   return (
     <section className="posts-preview">
       <div className="container">
-        <Link
-          to={profile?.username ? `/profile/${profile.username}` : "/"}
+        <a
+          href={profile?.username ? `/profile/${profile.username}` : "/"}
           className="btn-outline"
+          onClick={handleBack}
         >
           ← Volver
-        </Link>
+        </a>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <h2>Blog</h2>
           {/* Solo el dueño puede ver el botón */}

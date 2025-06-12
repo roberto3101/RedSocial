@@ -20,7 +20,10 @@ router.post("/register", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    if (!password || password.length < 8) {
+    if (!email)
+      return res.status(400).json({ msg: "Falta el correo" });
+
+    if (password && password.length < 8) {
       return res.status(400).json({ msg: "La contraseña debe tener 8+ caracteres" });
     }
 
@@ -33,9 +36,25 @@ router.post("/register", async (req, res) => {
         .json({ msg: "Ese correo ya está vinculado a Google/Facebook/GitHub" });
     }
 
+    // 🚩 Si existe, no está verificado, reenvía código (permite reenviar desde frontend)
+    if (existing && !existing.verified) {
+      const code = Math.floor(100000 + Math.random() * 900000).toString();
+      existing.code = code;
+      await upsert(existing);
+      await sendVerification(email, code);
+      return res.status(200).json({
+        msg: "El email ya fue registrado pero no verificado. Se ha reenviado un nuevo código.",
+        resend: true,
+      });
+    }
+
     if (existing) {
       return res.status(409).json({ msg: "Email ya registrado" });
     }
+
+    // Registro nuevo
+    if (!password)
+      return res.status(400).json({ msg: "Falta la contraseña" });
 
     const hash = await bcrypt.hash(password, 10);
     const code = Math.floor(100000 + Math.random() * 900000).toString();

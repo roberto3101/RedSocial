@@ -30,7 +30,7 @@
     "languages": "español, ingles, ruso, aleman",
     "interests": "frontend, backend",
     "about": "sjakhjash dhsadi asdhkja hkadkja dkahdkadkjahdkahdkadkad asdhkja dkadhka da dkadkadkahdkahdkjahdkasdka dhkaj dkja dkaj dakj dkajd kja dk",
-    "avatar": "http://localhost:3001/uploads/1749241811642-crash2.png",
+    "avatar": "http://localhost:3001/uploads/1749696064519-494205930_1143235860825046_989472794448593240_n.jpg",
     "whatsapp": "+51938192665"
   },
   {
@@ -45,5 +45,18 @@
     "interests": "frontend, backend",
     "about": "saxs",
     "avatar": "http://localhost:3001/uploads/1749322321734-Captura de pantalla (5).png"
+  },
+  {
+    "userId": "77030347-c6d9-44b0-b490-81c74a8106c0",
+    "username": "esthelita",
+    "firstName": "esthela josefinax",
+    "lastName": "ledezma",
+    "phone": "938192665",
+    "email": "esthelajlc79@gmail.com",
+    "website": "",
+    "languages": "Español, Inglés, Ruso, Alemán",
+    "interests": "frontend, backend",
+    "about": "fe3vevre3",
+    "avatar": "http://localhost:3001/uploads/1749698290705-assets_task_01jwzscyc1fcat1v28zzv27zbf_1749118607_img_1.webp"
   }
 ]

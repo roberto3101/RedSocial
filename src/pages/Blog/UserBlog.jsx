@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useLocation, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import EditPostModal from "../../components/EditPostModal";
 import { useProfile } from "../../context/ProfileContext";
@@ -9,6 +9,9 @@ export default function UserBlog() {
   const [posts, setPosts] = useState([]);
   const [postToEdit, setPostToEdit] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // Solo el dueño puede editar/eliminar/agregar
   const isOwner = profile?.username === username;
@@ -58,12 +61,28 @@ export default function UserBlog() {
     }
   };
 
+  // Lógica para el botón volver
+  function handleBack(e) {
+    e.preventDefault();
+    if (location.key !== "default") {
+      navigate(-1);
+    } else if (username) {
+      navigate(`/profile/${username}`, { replace: true });
+    } else {
+      navigate("/", { replace: true });
+    }
+  }
+
   return (
     <section className="posts-preview">
       <div className="container">
-        <Link to={profile?.username ? `/profile/${profile.username}` : "/"} className="btn-outline">
+        <a
+          href={username ? `/profile/${username}` : "/"}
+          className="btn-outline"
+          onClick={handleBack}
+        >
           ← Volver
-        </Link>
+        </a>
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <h2>Blog de {username}</h2>
@@ -110,4 +129,4 @@ export default function UserBlog() {
   );
 }
 
-//src\pages\Blog\UserBlog.jsx
+// src/pages/Blog/UserBlog.jsx

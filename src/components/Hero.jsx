@@ -9,6 +9,7 @@ export default function Hero({ profile: profileProp }) {
   const avatarSrc = profile?.avatar || rob;
   const firstName = profile?.firstName || "Roberto";
   const cvUrl = profile?.cv || "/cvEsp.pdf";
+  const blogUrl = profile?.username ? `/blog/user/${profile.username}` : "/blog";
 
   return (
     <section className="hero">
@@ -25,7 +26,7 @@ export default function Hero({ profile: profileProp }) {
               "Full-Stack Developer · Web Performance Enthusiast · Mentor de futuros devs."}
           </p>
           <div className="btn-group">
-            <a href="/blog" className="btn-cta">Leer el blog</a>
+            <a href={blogUrl} className="btn-cta">Leer el blog</a>
             <a
               href={cvUrl}
               className="btn-outline"

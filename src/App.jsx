@@ -17,7 +17,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { ProfileProvider } from "./context/ProfileContext";
 import CreateProfile from "./pages/Profile/CreateProfile";
 import ProtectedRoute from "./components/ProtectedRoute";
-import UserBlog from "./pages/Blog/UserBlog"; // ⬅️ importa el componente
+import UserBlog from "./pages/Blog/UserBlog";
 import NotFound from "./pages/NotFound";
 import CustomCursor from "./components/CustomCursor";
 import "./components/EditPostModal"; // registra el modal globalmente si lo necesitas
@@ -33,7 +33,12 @@ export default function App() {
           <Routes>
             {/* ----------- Rutas públicas ----------- */}
             <Route path="/" element={<Home />} />
+
+            {/* ----------- Proyectos global y por usuario ----------- */}
             <Route path="/projects" element={<Projects />} />
+            <Route path="/projects/:username" element={<Projects />} />
+            <Route path="/profile/:username/projects" element={<Projects />} />
+            <Route path="/user/:username/projects" element={<Projects />} />
 
             {/* ----------- Auth ----------- */}
             <Route path="/login" element={<Login />} />
@@ -42,7 +47,7 @@ export default function App() {
             <Route path="/oauth/success" element={<OAuthSuccess />} />
 
             {/* ----------- Blog por usuario ----------- */}
-            <Route path="/blog/user/:username" element={<UserBlog />} /> {/* <-- AQUÍ */}
+            <Route path="/blog/user/:username" element={<UserBlog />} />
 
             {/* ----------- Rutas de blog (públicas) ----------- */}
             <Route path="/blog" element={<BlogIndex />} />
@@ -66,8 +71,9 @@ export default function App() {
               }
             />
 
-            {/* ----------- Perfil público ----------- */}
+            {/* ----------- Perfil público y de visitante ----------- */}
             <Route path="/profile/:username" element={<ProfilePage />} />
+            <Route path="/user/:username" element={<ProfilePage />} /> {/* 👈 PERFIL VISITADO */}
 
             {/* ------------- 404 ------------- */}
             <Route path="*" element={<NotFound />} />

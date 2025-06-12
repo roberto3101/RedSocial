@@ -1,7 +1,8 @@
-// src/components/Navbar.jsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useProfile } from "../context/ProfileContext";
+import SearchDropDown from "./SearchDropDown";
+import axios from "axios";
 
 export default function Navbar({ profile: profileProp }) {
   const [open, setOpen] = useState(false);
@@ -9,8 +10,15 @@ export default function Navbar({ profile: profileProp }) {
   const location = useLocation();
   const navigate = useNavigate();
   const { setProfile } = useProfile();
-  // 👇 Usa prop si la hay, si no, contexto
   const profile = profileProp || useProfile().profile;
+
+  // Buscador
+  const [query, setQuery] = useState("");
+  const [type, setType] = useState("users");
+  const [results, setResults] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+  const timeoutRef = useRef();
 
   useEffect(() => {
     document.body.classList.toggle("menu-open", open);
@@ -31,12 +39,70 @@ export default function Navbar({ profile: profileProp }) {
     navigate("/");
   };
 
+  // --- Lógica de búsqueda, revisa bien este useEffect ---
+  useEffect(() => {
+    if (!query.trim()) {
+      setResults([]);
+      setShowDropdown(false);
+      return;
+    }
+    clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(async () => {
+      try {
+        const url = `/api/search?type=${type}&q=${encodeURIComponent(query)}`;
+        // DEBUG: Muestra la petición y la respuesta
+        // Puedes quitar este console.log después
+        const { data } = await axios.get(url);
+        // DEBUG:
+        // console.log("URL:", url, "DATA:", data);
+        setResults(Array.isArray(data) ? data : []);
+        setShowDropdown(true);
+      } catch (err) {
+        setResults([]);
+        setShowDropdown(false);
+      }
+    }, 250);
+    return () => clearTimeout(timeoutRef.current);
+  }, [query, type]);
+
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
   return (
     <header className="navbar">
       <div className="container nav-content">
         <Link to="/" className="logo" onClick={() => setOpen(false)}>
           el blog de <span>{profile?.username || "roberto3101"}</span>
         </Link>
+        <div className="searchbar-container" ref={dropdownRef}>
+          <div className="searchbar">
+            <input
+              type="text"
+              placeholder={`Buscar ${type === "users" ? "usuarios" : "posts"}...`}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onFocus={() => setShowDropdown(results.length > 0)}
+            />
+            <select value={type} onChange={(e) => setType(e.target.value)}>
+              <option value="users">Usuarios</option>
+              <option value="posts">Posts</option>
+            </select>
+          </div>
+          {showDropdown && (
+            <SearchDropDown
+              results={results}
+              type={type}
+              onClose={() => setShowDropdown(false)}
+            />
+          )}
+        </div>
         <button
           className={`burger ${open ? "open" : ""}`}
           aria-label="Menú"
@@ -53,7 +119,12 @@ export default function Navbar({ profile: profileProp }) {
             onClick={() => setOpen(false)}
           >
             <li><a href="#posts">Artículos</a></li>
-            <li><Link to="/projects">Proyectos</Link></li>
+           <li>
+  <Link to={profile?.username ? `/projects/${profile.username}` : "/projects"}>
+    Proyectos
+  </Link>
+</li>
+
             <li><a href="#about">Sobre mí</a></li>
             <li>
               <a href="#contact">

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import PostCard from "./PostCard";
 import { getPosts } from "../lib/posts";
 import { useProfile } from "../context/ProfileContext";
@@ -9,24 +10,29 @@ const DEMO_USER = "roberto3101";
 export default function PostSection() {
   const [latest, setLatest] = useState([]);
   const { profile } = useProfile();
+  const { username: paramUsername } = useParams(); // username de la URL si existe
 
   useEffect(() => {
     getPosts()
       .then((data) => {
-        // Si está logueado, muestra SUS artículos; si no, los del DEMO
-        const username = profile?.username || DEMO_USER;
+        // Prioridad: username de la URL > perfil logueado > demo
+        const username = paramUsername || profile?.username || DEMO_USER;
         const filtered = data.filter((p) => p.author === username);
         const sorted = [...filtered].sort((a, b) => new Date(b.date) - new Date(a.date));
         setLatest(sorted.slice(0, 3));
       })
       .catch(console.error);
-  }, [profile]);
+  }, [paramUsername, profile]);
 
   return (
     <section className="posts-preview" id="posts">
       <div className="container">
         <h2>
-          {profile?.username ? "Tus últimos artículos" : "Últimos artículos de demostración"}
+          {paramUsername
+            ? `Últimos artículos de ${paramUsername}`
+            : profile?.username
+              ? "Tus últimos artículos"
+              : "Últimos artículos de demostración"}
         </h2>
         <div className="posts-grid">
           {latest.map((p) => (

@@ -1,59 +1,258 @@
 // src/pages/Projects/Projects.jsx
-import React from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useProfile } from "../../../context/ProfileContext";
 
-const projects = [
-  {
-    image: "/imagenes/BiblioSystem.jpg",
-    name: "BiblioSystem",
-    brief:
-      "Sistema de gestión de bibliotecas con login, roles y CRUD para libros y alumnos.",
-    technologies: ["Java", "MySQL", "Tomcat"],
-    repo: "https://github.com/roberto3101"
-  },
-  {
-    image: "/imagenes/CRUD.jpg",
-    name: "CRUD App",
-    brief: "CRUD sencillo con React y MySQL.",
-    technologies: ["React", "SqlServer", "Node.js"],
-    repo: "https://github.com/roberto3101"
-  },
-  {
-    image: "/imagenes/Thenx.png",
-    name: "Web de ejercicios",
-    brief:
-      "Aplicación para gestionar rutinas y progreso de entrenamiento.",
-    technologies: ["HTML", "CSS", "JavaScript"],
-    repo: "https://github.com/roberto3101"
-  },
-  {
-    image: "/imagenes/highrise.png",
-    name: "Bots JS / Node",
-    brief:
-      "Bots en Node.js para automatizar emotes, teleports, roles y donaciones.",
-    technologies: ["JavaScript", "Node.js"],
-    repo: "https://github.com/roberto3101"
-  }
-];
+// Modal para editar/agregar
+function ProjectModal({ open, onClose, onSave, initial }) {
+  const [form, setForm] = useState(
+    initial || {
+      name: "",
+      brief: "",
+      technologies: [],
+      repo: "",
+      image: "",
+      imageFile: null,
+    }
+  );
+  const [imgPreview, setImgPreview] = useState(initial?.image || "");
 
+  useEffect(() => {
+    if (initial) {
+      setForm({ ...initial, imageFile: null });
+      setImgPreview(initial.image || "");
+    } else {
+      setForm({ name: "", brief: "", technologies: [], repo: "", image: "", imageFile: null });
+      setImgPreview("");
+    }
+  }, [initial, open]);
+
+  if (!open) return null;
+
+  // Input de tecnologías tipo tags
+  const handleTechKeyDown = (e) => {
+    if (
+      (e.key === " " || e.key === "Enter" || e.key === ",") &&
+      e.target.value.trim()
+    ) {
+      e.preventDefault();
+      const value = e.target.value.trim();
+      if (value && !form.technologies.includes(value)) {
+        setForm((prev) => ({
+          ...prev,
+          technologies: [...prev.technologies, value],
+        }));
+      }
+      e.target.value = "";
+    }
+  };
+
+  const handleTechRemove = (idx) => {
+    setForm((prev) => ({
+      ...prev,
+      technologies: prev.technologies.filter((_, i) => i !== idx),
+    }));
+  };
+
+  const handleImage = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setForm((prev) => ({ ...prev, imageFile: file }));
+    setImgPreview(URL.createObjectURL(file));
+  };
+
+  const submitForm = async (e) => {
+    e.preventDefault();
+    let dataToSend = { ...form };
+    if (form.imageFile) {
+      const imgData = new FormData();
+      imgData.append("image", form.imageFile);
+      const res = await axios.post("/api/upload-image", imgData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      dataToSend.image = res.data.url;
+    }
+    delete dataToSend.imageFile;
+    onSave(dataToSend);
+  };
+
+  return (
+    <div className="modal-overlay-modern" onClick={onClose}>
+      <div className="modal-content-modern" onClick={e => e.stopPropagation()}>
+        <h2 className="modal-title">{initial ? "Editar" : "Agregar"} proyecto</h2>
+        <form
+          onSubmit={submitForm}
+          style={{ display: "flex", flexDirection: "column", gap: 16 }}
+          autoComplete="off"
+        >
+          <label>
+            Nombre
+            <input
+              required
+              value={form.name}
+              onChange={e => setForm({ ...form, name: e.target.value })}
+              autoFocus
+            />
+          </label>
+          <label>
+            Descripción breve
+            <input
+              value={form.brief}
+              onChange={e => setForm({ ...form, brief: e.target.value })}
+            />
+          </label>
+          <label>
+            Tecnologías
+            <div className="tech-tags-input">
+              {form.technologies.map((tech, idx) => (
+                <span className="tech-badge tag-badge" key={tech + idx}>
+                  {tech}
+                  <button type="button" className="tag-remove" onClick={() => handleTechRemove(idx)}>&times;</button>
+                </span>
+              ))}
+              <input
+                className="tag-input"
+                type="text"
+                placeholder="Escribe y presiona espacio…"
+                onKeyDown={handleTechKeyDown}
+                style={{ flex: 1, minWidth: 70, background: "transparent", border: "none", outline: "none" }}
+              />
+            </div>
+          </label>
+          <label>
+            Imagen (opcional)
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImage}
+              style={{ marginBottom: 6 }}
+            />
+            {imgPreview && (
+              <div style={{ marginTop: 6 }}>
+                <img
+                  src={imgPreview}
+                  alt="Vista previa"
+                  style={{
+                    width: 85,
+                    height: 85,
+                    objectFit: "cover",
+                    borderRadius: 10,
+                    border: "1px solid #334",
+                    boxShadow: "0 2px 12px #0004",
+                  }}
+                />
+              </div>
+            )}
+          </label>
+          <label>
+            Repositorio GitHub
+            <input
+              required
+              value={form.repo}
+              onChange={e => setForm({ ...form, repo: e.target.value })}
+              placeholder="https://github.com/..."
+              type="url"
+            />
+          </label>
+          <div className="btn-group" style={{ justifyContent: "flex-end", gap: "1rem" }}>
+            <button type="button" className="btn-outline" onClick={onClose}>
+              Cancelar
+            </button>
+            <button className="btn-primary">{initial ? "Guardar" : "Agregar"}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// Componente principal
 export default function Projects() {
+  const { username } = useParams();
+  const [projects, setProjects] = useState([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editing, setEditing] = useState(null);
+  const { profile } = useProfile();
+  const navigate = useNavigate();
+
+  // Si no estamos en /projects/:username, mostrar los proyectos del usuario logueado
+  const usuario = username || profile?.username;
+
+  useEffect(() => {
+    if (!usuario) return;
+    axios
+      .get(`/api/projects/${usuario}`)
+      .then((r) => setProjects(r.data))
+      .catch(() => setProjects([]));
+  }, [usuario]);
+
+  const isOwner = profile && usuario && profile.username === usuario;
+
+  const handleSave = async (data) => {
+    if (editing) {
+      const res = await axios.put(`/api/projects/${editing.id}`, data, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("jwt")}` },
+      });
+      setProjects((ps) => ps.map((p) => (p.id === editing.id ? res.data : p)));
+    } else {
+      const res = await axios.post(`/api/projects`, data, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("jwt")}` },
+      });
+      setProjects((ps) => [...ps, res.data]);
+    }
+    setModalOpen(false);
+    setEditing(null);
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("¿Eliminar este proyecto?")) return;
+    await axios.delete(`/api/projects/${id}`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem("jwt")}` },
+    });
+    setProjects((ps) => ps.filter((p) => p.id !== id));
+  };
+
   return (
     <section id="projects" className="projects-section">
       <div className="container">
-        {/* Botón regresar */}
         <Link to="/" className="btn-cta back-btn">
           ← Volver al inicio
         </Link>
-
-        <h2 className="projects-title">Algunos proyectos</h2>
-
+        <h2 className="projects-title">
+          Proyectos {usuario && <span style={{ fontWeight: 400 }}>de {usuario}</span>}
+        </h2>
+        {isOwner && (
+          <div
+            className="project-card"
+            style={{
+              display: "inline-flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              minHeight: 260,
+              minWidth: 210,
+              cursor: "pointer",
+              border: "2px dashed var(--accent)",
+              color: "var(--accent)",
+              fontSize: "3.5rem",
+              marginBottom: 24,
+            }}
+            onClick={() => {
+              setEditing(null);
+              setModalOpen(true);
+            }}
+            title="Agregar nuevo proyecto"
+          >
+            <span style={{ fontSize: "4rem", lineHeight: 1 }}>+</span>
+            <div style={{ fontSize: "1rem", marginTop: 12 }}>Agregar proyecto</div>
+          </div>
+        )}
         <div className="project-grid">
-          {projects.map(({ image, name, brief, technologies, repo }) => (
-            <article key={name} className="project-card">
-              {/* mini-wrapper para overlay */}
+          {projects.map(({ id, image, name, brief, technologies, repo }, idx) => (
+            <article key={id} className="project-card" style={{ position: "relative" }}>
               <div className="project-thumb">
-                <img src={image} alt={name} className="project-img" />
-                {/* overlay + link GitHub */}
+                <img src={image || "/imagenes/default.png"} alt={name} className="project-img" />
                 <a
                   href={repo}
                   target="_blank"
@@ -61,7 +260,6 @@ export default function Projects() {
                   className="card-overlay"
                   aria-label={`Repositorio de ${name}`}
                 >
-                  {/* icono GitHub simple (SVG) */}
                   <svg viewBox="0 0 24 24" width="48" height="48">
                     <path
                       fill="currentColor"
@@ -69,19 +267,66 @@ export default function Projects() {
                     />
                   </svg>
                 </a>
+                {isOwner && (
+                  <div style={{ position: "absolute", top: 12, right: 12, zIndex: 2, display: "flex", gap: 4 }}>
+                    <button
+                      title="Editar"
+                      style={{
+                        background: "var(--surface)",
+                        border: "none",
+                        color: "var(--accent)",
+                        borderRadius: 5,
+                        padding: "3px 9px",
+                        fontSize: 19,
+                        cursor: "pointer",
+                        marginRight: 2,
+                        boxShadow: "0 2px 8px #0005",
+                      }}
+                      onClick={() => {
+                        setEditing({ id, name, brief, technologies, repo, image });
+                        setModalOpen(true);
+                      }}
+                    >
+                      ✎
+                    </button>
+                    <button
+                      title="Eliminar"
+                      style={{
+                        background: "#111",
+                        border: "none",
+                        color: "#fa7272",
+                        borderRadius: 5,
+                        padding: "3px 8px",
+                        fontSize: 19,
+                        cursor: "pointer",
+                        boxShadow: "0 2px 8px #0005",
+                      }}
+                      onClick={() => handleDelete(id)}
+                    >
+                      🗑
+                    </button>
+                  </div>
+                )}
               </div>
-
               <h3>{name}</h3>
               <p>{brief}</p>
-
               <div className="tech-list">
-                {technologies.map(t => (
+                {technologies && technologies.map((t) => (
                   <span key={t} className="tech-badge">{t}</span>
                 ))}
               </div>
             </article>
           ))}
         </div>
+        <ProjectModal
+          open={modalOpen}
+          onClose={() => {
+            setModalOpen(false);
+            setEditing(null);
+          }}
+          onSave={handleSave}
+          initial={editing}
+        />
       </div>
     </section>
   );

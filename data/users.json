@@ -52,5 +52,19 @@
     "email": "jose068651@gmail.com",
     "verified": true,
     "oauth": "facebook"
+  },
+  {
+    "id": "770c45b7-8f97-4fd1-b32a-11e91b3a75b0",
+    "email": "cuentatesteorob01@gmail.com",
+    "hash": "$2b$10$a.LuBkpGa6lh2FX5JAprXecXqGfmWt20R7ZxOZaEiqWo.nkB7uNyC",
+    "verified": false,
+    "code": "718176"
+  },
+  {
+    "id": "77030347-c6d9-44b0-b490-81c74a8106c0",
+    "email": "esthelajlc79@gmail.com",
+    "hash": "$2b$10$JTb5WWRXWk2.91XMmNHrA.Fb71uZewfbEg9fPV/GxV.CamwayDvO6",
+    "verified": true,
+    "code": "175877"
   }
 ]

@@ -1,13 +1,16 @@
 // src/pages/Blog/PostPage.jsx
-import { useParams, Link } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getPostBySlug } from "../../lib/posts";
-import "../../index.css"; // Asegúrate de importar el CSS
+import "../../index.css";
 
 export default function PostPage() {
   const { slug } = useParams();
   const [post, setPost] = useState(null);
   const [error, setError] = useState(false);
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     getPostBySlug(slug)
@@ -27,10 +30,26 @@ export default function PostPage() {
     year: "numeric",
   });
 
+  // Determinar ruta para volver
+  let backUrl = "/blog";
+  if (post?.username) backUrl = `/blog/user/${post.username}`;
+  if (post?.author?.username) backUrl = `/blog/user/${post.author.username}`;
+
+  function handleBack(e) {
+    e.preventDefault();
+    if (location.key !== "default") {
+      navigate(-1);
+    } else {
+      navigate(backUrl, { replace: true });
+    }
+  }
+
   return (
     <article className="article-page">
       <div className="article-header">
-        <Link to="/blog" className="btn-outline">← Volver</Link>
+        <a href={backUrl} className="btn-outline" onClick={handleBack}>
+          ← Volver
+        </a>
         <h1 className="article-title">{post.title}</h1>
         <div className="article-meta">
           <span>{prettyDate}</span> • <span>{post.minutes ?? "?"} min de lectura</span>
@@ -40,7 +59,7 @@ export default function PostPage() {
       <hr className="divider" />
 
       <div
-        className="article-content"
+        className="article-content post-body"
         dangerouslySetInnerHTML={{ __html: post.html ?? post.body }}
       />
     </article>

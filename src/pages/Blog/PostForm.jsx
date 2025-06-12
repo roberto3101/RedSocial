@@ -191,13 +191,14 @@ export default function PostForm() {
           </div>
         </form>
       </section>
-      <section className="preview-panel">
-        <h3>Vista previa en tiempo real</h3>
-        <div
-          className="preview-body"
-          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formData.body) }}
-        />
-      </section>
+     <section className="preview-panel">
+  <h3>Vista previa en tiempo real</h3>
+  <div
+    className="preview-body article-content post-body"
+    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formData.body) }}
+  />
+</section>
+
     </>
   );
 }

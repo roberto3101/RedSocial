@@ -26,3 +26,6 @@ export async function verifyToken(req, res, next) {
     return res.status(401).json({ msg: "Sesión expirada o inválida" });
   }
 }
+
+
+//backend\middleware\auth.js

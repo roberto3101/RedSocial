@@ -7,9 +7,11 @@ export default defineConfig({
   server: {
     fs: {
       strict: false
+    },
+    proxy: {
+      "/api": "http://localhost:3001", // <--- Agregado: Proxy solo para llamadas /api
     }
   },
-  // 👇 Esto permite que rutas fuera del sistema de React funcionen
   build: {
     rollupOptions: {
       input: {

@@ -10,8 +10,10 @@ import passport from "passport";
 import profileRoutes from "./routes/profile.js";
 import postsRoutes   from "./routes/posts.js";
 import authRoutes    from "./routes/auth.js";
-import "./passport.js";                     // estrategias OAuth
 
+import projectsRoutes from "./routes/projects.js"; // rutas de proyectos
+import "./passport.js";                     // estrategias OAuth
+import searchRouter from "./routes/search.js";
 const app  = express();
 const PORT = process.env.PORT || 3001;
 
@@ -19,7 +21,8 @@ const PORT = process.env.PORT || 3001;
 app.use(cors({ origin: process.env.FRONT_URL, credentials: true }));
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
-
+app.use("/api/search", searchRouter);
+app.use("/api/projects", projectsRoutes); // ruta de proyectos
 /* ───── Passport (solo para flujos OAuth) ───── */
 app.use(
   session({
