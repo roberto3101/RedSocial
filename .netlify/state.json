@@ -1,0 +1,19 @@
+{
+	"geolocation": {
+		"data": {
+			"city": "Lima",
+			"country": {
+				"code": "PE",
+				"name": "Peru"
+			},
+			"subdivision": {
+				"code": "LMA",
+				"name": "Lima Province"
+			},
+			"timezone": "America/Lima",
+			"latitude": -12.046,
+			"longitude": -77.0305
+		},
+		"timestamp": 1748452201557
+	}
+}
