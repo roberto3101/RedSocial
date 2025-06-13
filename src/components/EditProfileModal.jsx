@@ -69,7 +69,7 @@ export default function EditProfileModal({ isOpen, onClose, onSaved }) {
     }
   };
 
-  // Validar formato WhatsApp antes de guardar
+  // Validar formato WhatsApp antes de guardar (SIEMPRE debe tener +)
   const validateWhatsApp = (number) => /^\+\d{7,20}$/.test(number);
 
   const handleSave = async (e) => {
@@ -124,7 +124,7 @@ export default function EditProfileModal({ isOpen, onClose, onSaved }) {
           <input type="number" name="deployed" value={form.deployed || 0} onChange={handleChange} min={0} />
         </label>
 
-        {/* Adjuntar foto de perfil */}
+        {/* Adjuntar foto de perfil (avatar) */}
         <label>
           Adjuntar foto de perfil (avatar)
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>

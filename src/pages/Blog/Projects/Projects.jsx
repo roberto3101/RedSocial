@@ -1,6 +1,6 @@
 // src/pages/Projects/Projects.jsx
 import { useEffect, useState } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useProfile } from "../../../context/ProfileContext";
 
@@ -189,6 +189,17 @@ export default function Projects() {
 
   const isOwner = profile && usuario && profile.username === usuario;
 
+  // Botón volver: redirige al perfil correspondiente
+  const handleBack = () => {
+    if (username) {
+      navigate(`/profile/${username}`);
+    } else if (profile?.username) {
+      navigate(`/profile/${profile.username}`);
+    } else {
+      navigate("/");
+    }
+  };
+
   const handleSave = async (data) => {
     if (editing) {
       const res = await axios.put(`/api/projects/${editing.id}`, data, {
@@ -216,9 +227,13 @@ export default function Projects() {
   return (
     <section id="projects" className="projects-section">
       <div className="container">
-        <Link to="/" className="btn-cta back-btn">
-          ← Volver al inicio
-        </Link>
+        <button
+          className="btn-cta back-btn"
+          style={{ marginBottom: 18 }}
+          onClick={handleBack}
+        >
+          ← Volver al perfil
+        </button>
         <h2 className="projects-title">
           Proyectos {usuario && <span style={{ fontWeight: 400 }}>de {usuario}</span>}
         </h2>

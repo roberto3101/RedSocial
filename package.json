@@ -26,6 +26,7 @@
     "express-session": "^1.18.1",
     "gray-matter": "^4.0.3",
     "jsonwebtoken": "^9.0.2",
+    "lucide-react": "^0.514.0",
     "marked": "^15.0.12",
     "multer": "^2.0.0",
     "nodemailer": "^7.0.3",

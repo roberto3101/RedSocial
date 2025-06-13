@@ -23,6 +23,7 @@ import CustomCursor from "./components/CustomCursor";
 import "./components/EditPostModal"; // registra el modal globalmente si lo necesitas
 
 import ProfilePage from "./pages/Profile/ProfilePage";
+import ChatWidget from "./components/ChatWidget"; // 👈 IMPORTANTE: asegúrate de que aquí esté tu componente actualizado
 
 /* --------------------------------------------------- */
 export default function App() {
@@ -78,6 +79,9 @@ export default function App() {
             {/* ------------- 404 ------------- */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+
+          {/* Widget de chat flotante */}
+          <ChatWidget />
 
           {/* Cursor personalizado */}
           {createPortal(<CustomCursor />, document.body)}

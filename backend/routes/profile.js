@@ -3,7 +3,7 @@ import { verifyToken } from "../middleware/auth.js";
 import {
   getProfileById,
   upsertProfile,
-  getProfileByUsername
+  getProfileByUsername,
 } from "../profileStore.js";
 
 const router = Router();
@@ -23,6 +23,20 @@ router.get("/", verifyToken, async (req, res) => {
 /* -------- Crear / actualizar perfil ----------------------- */
 router.post("/", verifyToken, async (req, res) => {
   try {
+    const { username } = req.body;
+
+    // ① Verificar que el username sea único (si se envía)
+    if (username) {
+      const existing = await getProfileByUsername(username);
+      // Si existe y pertenece a OTRO usuario, rechazamos
+      if (existing && existing.userId !== req.user.id) {
+        return res
+          .status(409)
+          .json({ msg: "Ese nombre de usuario ya está en uso" });
+      }
+    }
+
+    // ② Crear o actualizar el perfil
     await upsertProfile({ userId: req.user.id, ...req.body });
     const updated = await getProfileById(req.user.id);
     res.status(200).json(updated);
@@ -39,7 +53,17 @@ router.get("/:username", async (req, res) => {
     if (!profile) {
       return res.status(404).json({ msg: "Perfil no encontrado" });
     }
-    res.json(profile);
+
+    // Filtra solo los campos públicos que quieres mostrar
+    const publicProfile = {
+      username: profile.username,
+      avatar: profile.avatar,
+      about: profile.about,
+      firstName: profile.firstName,
+      lastName: profile.lastName,
+    };
+
+    res.json(publicProfile);
   } catch (err) {
     console.error("/api/profile/:username GET:", err);
     res.status(500).json({ msg: "Error del servidor" });
@@ -47,5 +71,3 @@ router.get("/:username", async (req, res) => {
 });
 
 export default router;
-
-//backend\routes\profile.js
