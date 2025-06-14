@@ -1,6 +1,7 @@
+// backend/middleware/auth.js
 import jwt from "jsonwebtoken";
 import { findById } from "../userStore.js";
-import { getProfileById } from "../profileStore.js"; // <--- Importa esto
+import { getProfileById } from "../profileStore.js";
 
 export async function verifyToken(req, res, next) {
   try {
@@ -26,6 +27,3 @@ export async function verifyToken(req, res, next) {
     return res.status(401).json({ msg: "Sesión expirada o inválida" });
   }
 }
-
-
-//backend\middleware\auth.js
