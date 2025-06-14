@@ -17,7 +17,7 @@ import chatsRouter       from "./routes/chats.js";
 import "./passport.js";
 
 const app  = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 8080;
 
 /* ───── Root health route ───── */
 app.get("/", (_req, res) => res.send("OK"));
