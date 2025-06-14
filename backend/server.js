@@ -40,7 +40,13 @@ app.use("/api/chats",       chatsRouter);
 app.use(session({
   secret: process.env.SESSION_SECRET || "supersecret",
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  /*  🔒  hace que la cookie de sesión viaje por HTTPS
+      y se acepte desde un dominio diferente (GitHub Pages) */
+  cookie: {
+    sameSite: "none",
+    secure: true
+  }
 }));
 app.use(passport.initialize());
 app.use(passport.session());
