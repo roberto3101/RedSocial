@@ -8,11 +8,13 @@ import {
 
 const router = Router();
 
-/* -------- Obtener MI perfil ------------------------------- */
+/* --------------------------------------------------------
+   Obtener MI perfil (privado)
+-------------------------------------------------------- */
 router.get("/", verifyToken, async (req, res) => {
   try {
     const profile = await getProfileById(req.user.id);
-    // Si no hay perfil, devolver objeto vacío en lugar de 404
+    // Si no hay perfil, devolver objeto vacío (200) en vez de 404
     res.json(profile || {});
   } catch (err) {
     console.error("/api/profile GET:", err);
@@ -20,23 +22,22 @@ router.get("/", verifyToken, async (req, res) => {
   }
 });
 
-/* -------- Crear / actualizar perfil ----------------------- */
+/* --------------------------------------------------------
+   Crear / actualizar perfil (privado)
+-------------------------------------------------------- */
 router.post("/", verifyToken, async (req, res) => {
   try {
     const { username } = req.body;
 
-    // ① Verificar que el username sea único (si se envía)
+    // 1️⃣  Verificar que el username sea único (si se envía)
     if (username) {
       const existing = await getProfileByUsername(username);
-      // Si existe y pertenece a OTRO usuario, rechazamos
       if (existing && existing.userId !== req.user.id) {
-        return res
-          .status(409)
-          .json({ msg: "Ese nombre de usuario ya está en uso" });
+        return res.status(409).json({ msg: "Ese nombre de usuario ya está en uso" });
       }
     }
 
-    // ② Crear o actualizar el perfil
+    // 2️⃣  Crear o actualizar el perfil
     await upsertProfile({ userId: req.user.id, ...req.body });
     const updated = await getProfileById(req.user.id);
     res.status(200).json(updated);
@@ -46,7 +47,9 @@ router.post("/", verifyToken, async (req, res) => {
   }
 });
 
-/* -------- Obtener perfil por username (público) ----------- */
+/* --------------------------------------------------------
+   Obtener perfil por username (público)
+-------------------------------------------------------- */
 router.get("/:username", async (req, res) => {
   try {
     const profile = await getProfileByUsername(req.params.username);
@@ -54,13 +57,17 @@ router.get("/:username", async (req, res) => {
       return res.status(404).json({ msg: "Perfil no encontrado" });
     }
 
-    // Filtra solo los campos públicos que quieres mostrar
+    // Campos seguros a exponer públicamente
     const publicProfile = {
-      username: profile.username,
-      avatar: profile.avatar,
-      about: profile.about,
+      username:  profile.username,
+      avatar:    profile.avatar,
+      about:     profile.about,
       firstName: profile.firstName,
-      lastName: profile.lastName,
+      lastName:  profile.lastName,
+      // Enlaces de contacto
+      whatsapp:  profile.whatsapp,
+      github:    profile.github,
+      linkedin:  profile.linkedin,
     };
 
     res.json(publicProfile);
