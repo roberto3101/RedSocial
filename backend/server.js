@@ -17,32 +17,43 @@ import chatsRouter       from "./routes/chats.js";
 import "./passport.js";
 
 const app  = express();
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3001;
 
-/* ───── Root health route ───── */
-app.get("/", (_req, res) => res.send("OK"));
+// ─────────── CORS seguro para producción y desarrollo ───────────
+const allowedOrigins = [
+  process.env.FRONT_URL,                 // producción
+  "http://localhost:5173",               // desarrollo vite
+  "http://localhost:3000",               // otro puerto común
+];
 
-/* ───── Middlewares globales ───── */
 app.use(cors({
-  origin: process.env.FRONT_URL,
+  origin: function(origin, callback) {
+    // Permite peticiones sin origin (como Postman) o si está permitido
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("No permitido por CORS"));
+    }
+  },
   credentials: true
 }));
+
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
-/* ───── API routers ───── */
+// ─────────── Rutas API ───────────
+app.get("/", (_req, res) => res.send("OK"));
+
 app.use("/api/search",      searchRouter);
 app.use("/api/projects",    projectsRoutes);
 app.use("/api/chat-search", chatSearchRouter);
 app.use("/api/chats",       chatsRouter);
 
-/* ───── Passport (OAuth) ───── */
+// ─────────── Passport (OAuth) ───────────
 app.use(session({
   secret: process.env.SESSION_SECRET || "supersecret",
   resave: false,
   saveUninitialized: false,
-  /*  🔒  hace que la cookie de sesión viaje por HTTPS
-      y se acepte desde un dominio diferente (GitHub Pages) */
   cookie: {
     sameSite: "none",
     secure: true
@@ -51,7 +62,7 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-/* ───── Carpeta de uploads ───── */
+// ─────────── Carpeta de uploads ───────────
 const uploadDir = "./uploads";
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 app.use("/uploads", express.static(path.resolve(uploadDir)));
@@ -64,16 +75,16 @@ const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } });
 
 app.post("/api/upload-image", upload.single("image"), (req, res) => {
   if (!req.file) return res.status(400).json({ error: "No se subió imagen" });
+  // Para backend en cloud o elasticbeanstalk, reemplaza por la url absoluta si hace falta
   const baseUrl = `${req.protocol}://${req.headers.host}`;
   res.json({ url: `${baseUrl}/uploads/${req.file.filename}` });
 });
 
-/* ───── Rutas de negocio ───── */
 app.use("/api/profile", profileRoutes);
 app.use("/api/posts",   postsRoutes);
 app.use("/auth",        authRoutes);
 
-/* ───── Arranque ───── */
+// ─────────── Arranque ───────────
 app.listen(PORT, () =>
   console.log(`✅ API corriendo en http://localhost:${PORT}`)
 );
