@@ -1,14 +1,15 @@
-// backend/routes/projects.js
 import { Router } from "express";
 import { verifyToken } from "../middleware/auth.js";
 import fs from "fs";
 import path from "path";
 
 const router = Router();
-const PROJECTS_FILE = path.resolve("./data/projects.json");
+const PROJECTS_FILE = process.env.NODE_ENV === "production"
+  ? "/tmp/projects.json"
+  : path.resolve("./data/projects.json");
 
 // Asegura la carpeta y archivo
-if (!fs.existsSync("./data")) fs.mkdirSync("./data");
+if (!fs.existsSync(path.dirname(PROJECTS_FILE))) fs.mkdirSync(path.dirname(PROJECTS_FILE), { recursive: true });
 if (!fs.existsSync(PROJECTS_FILE)) fs.writeFileSync(PROJECTS_FILE, "[]");
 
 function readProjects() {
@@ -75,5 +76,3 @@ router.delete("/:id", verifyToken, (req, res) => {
 });
 
 export default router;
-// Exportar el router
-// para que pueda ser usado en el servidor principal

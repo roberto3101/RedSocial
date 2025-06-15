@@ -5,11 +5,17 @@ import { marked } from "marked";
 import { verifyToken } from "../middleware/auth.js";
 
 const router = Router();
-const filePath = path.resolve("data/posts.json");
+const filePath = process.env.NODE_ENV === "production"
+  ? "/tmp/posts.json"
+  : path.resolve("data/posts.json");
 
 const readPosts = () => {
-  const data = fs.readFileSync(filePath, "utf-8");
-  return JSON.parse(data);
+  try {
+    const data = fs.readFileSync(filePath, "utf-8");
+    return JSON.parse(data);
+  } catch {
+    return [];
+  }
 };
 const writePosts = (posts) => {
   fs.writeFileSync(filePath, JSON.stringify(posts, null, 2));
@@ -107,4 +113,3 @@ router.delete("/:slug", verifyToken, (req, res) => {
 });
 
 export default router;
-// backend/routes/posts.js

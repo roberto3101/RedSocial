@@ -1,12 +1,11 @@
-/* ────────────────────────────────────────────
-   backend/userStore.js  –  persistente en JSON
-───────────────────────────────────────────── */
 import fs from "fs/promises";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const DATA_DIR  = resolve(__dirname, "..", "data");
+const DATA_DIR  = process.env.NODE_ENV === "production"
+  ? "/tmp"
+  : resolve(__dirname, "..", "data");
 const FILE      = resolve(DATA_DIR, "users.json");
 
 /* ---------- Helpers de disco ---------- */

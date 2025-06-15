@@ -63,7 +63,9 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // ─────────── Carpeta de uploads ───────────
-const uploadDir = "./uploads";
+const uploadDir = process.env.NODE_ENV === "production"
+  ? "/tmp/uploads"
+  : "./uploads";
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 app.use("/uploads", express.static(path.resolve(uploadDir)));
 

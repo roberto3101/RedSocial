@@ -1,5 +1,3 @@
-// CAMBIO EN profileStore.js
-
 import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -7,8 +5,11 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// ✅ corregido: archivo ahora en /backend/data/profiles.json
-const file = path.join(__dirname, "data", "profiles.json");
+const dataDir = process.env.NODE_ENV === "production"
+  ? "/tmp"
+  : path.join(__dirname, "data");
+
+const file = path.join(dataDir, "profiles.json");
 
 async function read() {
   try {
@@ -19,6 +20,7 @@ async function read() {
 }
 
 async function write(data) {
+  await fs.mkdir(dataDir, { recursive: true });
   await fs.writeFile(file, JSON.stringify(data, null, 2));
 }
 
