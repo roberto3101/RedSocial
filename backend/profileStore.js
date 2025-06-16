@@ -5,10 +5,8 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const dataDir = process.env.NODE_ENV === "production"
-  ? "/tmp"
-  : path.join(__dirname, "data");
-
+// Siempre usar la carpeta "data" junto al proyecto
+const dataDir = path.join(__dirname, "data");
 const file = path.join(dataDir, "profiles.json");
 
 async function read() {
