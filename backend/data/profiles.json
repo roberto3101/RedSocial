@@ -1,24 +1,5 @@
 [
-  {
-    "userId": "fda22a59-1dbe-4366-a057-50daac5a3a24",
-    "username": "roberto3101",
-    "firstName": "Roberto",
-    "lastName": "Larosa",
-    "phone": "+51938192665",
-    "email": "jose0686534@gmail.com",
-    "website": "notengo.com",
-    "languages": "Español, Inglés, Ruso, Alemán",
-    "interests": "Frontend, Backend",
-    "about": "Hola! Soy Roberto Larosa, Desarrollador de Software venezolano afincado en Perú. Me apasiona crear experiencias web de alto rendimiento con React, Node.js y herramientas cloud-native. Aquí comparto lo que aprendo para impulsar a la comunidad dev.",
-    "avatar": "http://localhost:3001/uploads/1749269249381-20250605_1456_Montaje FotogrÃ¡fico Retro_remix_01jx0tj18sehca7na760m9m0b0.png",
-    "experience": 2,
-    "codeLines": 30000,
-    "deployed": 15,
-    "cv": "http://localhost:3001/uploads/1749324109219-Plan de ImplementaciÃ³n de EFSRT - ETI 2024.pdf",
-    "whatsapp": "+51938192665",
-    "github": "",
-    "linkedin": ""
-  },
+ 
   {
     "userId": "feecac1a-0878-4092-810b-66a27e042ef0",
     "username": "transitorio",

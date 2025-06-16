@@ -75,12 +75,20 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } });
 
+// ******* CAMBIO AQUÍ: CloudFront en producción *******
 app.post("/api/upload-image", upload.single("image"), (req, res) => {
   if (!req.file) return res.status(400).json({ error: "No se subió imagen" });
-  // Para backend en cloud o elasticbeanstalk, reemplaza por la url absoluta si hace falta
-  const baseUrl = `${req.protocol}://${req.headers.host}`;
+
+  let baseUrl;
+  if (process.env.NODE_ENV === "production") {
+    baseUrl = "https://d315m7tpvzh3ta.cloudfront.net"; // <--- TU URL DE CLOUD
+  } else {
+    baseUrl = `${req.protocol}://${req.headers.host}`;
+  }
+
   res.json({ url: `${baseUrl}/uploads/${req.file.filename}` });
 });
+// ******* FIN DEL CAMBIO *******
 
 app.use("/api/profile", profileRoutes);
 app.use("/api/posts",   postsRoutes);
