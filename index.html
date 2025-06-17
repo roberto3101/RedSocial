@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite + React</title>
     <style>
-      /* Estilo del widget */
       #translate-widget-container {
         position: fixed;
         top: 128px;
@@ -22,8 +21,6 @@
         display: flex;
         align-items: center;
         gap: 10px;
-        cursor: move;
-        touch-action: none;
         user-select: none;
       }
       .translate-label {
@@ -34,9 +31,15 @@
         display: flex;
         align-items: center;
         gap: 5px;
+        cursor: grab; /* ¡solo aquí! */
+        -webkit-user-drag: none;
+      }
+      .translate-label:active {
+        cursor: grabbing;
       }
       #google_translate_element {
         width: 100%;
+        user-select: auto;
       }
       /* Oculta logo y textos extra de Google */
       .goog-logo-link, .goog-te-gadget span {
@@ -63,7 +66,6 @@
         background: #212a34;
         color: #58a6ff;
       }
-      /* Responsive */
       @media (max-width: 600px) {
         #translate-widget-container {
           padding: 4px 8px 4px 8px;
@@ -92,7 +94,6 @@
         <span class="icon">🌐</span> Traductor
       </span>
       <div id="google_translate_element"></div>
-      <div id="translate-cover" style="position:absolute;inset:0;z-index:1;background:transparent;"></div>
     </div>
 
     <script type="text/javascript">
@@ -103,49 +104,48 @@
           layout: google.translate.TranslateElement.InlineLayout.SIMPLE
         }, 'google_translate_element');
       }
-      // Hace clic en el combo al hacer clic/tap en el contenedor o presionar enter/espacio
-      document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(() => {
-          const cover = document.getElementById('translate-cover');
-          const combo = document.querySelector('.goog-te-combo');
-          const cont = document.getElementById('translate-widget-container');
-          if (cover && combo) {
-            cover.addEventListener('click', () => combo.focus());
-            cont.addEventListener('keydown', (e) => {
-              if(e.key === 'Enter' || e.key === ' '){
-                combo.focus();
-                e.preventDefault();
-              }
-            });
-          }
-        }, 1200); // Espera a que cargue Google Translate
-      });
 
-      // ======== DRAG & DROP (mouse y touch) ========
+      // DRAG sólo sobre la etiqueta "Traductor"
       (function() {
         const widget = document.getElementById('translate-widget-container');
+        const handle = widget.querySelector('.translate-label');
         let offsetX = 0, offsetY = 0, dragging = false;
 
-        widget.addEventListener('mousedown', e => {
-          if (e.target.id === 'translate-cover' || e.target === widget) {
-            dragging = true;
-            offsetX = e.clientX - widget.getBoundingClientRect().left;
-            offsetY = e.clientY - widget.getBoundingClientRect().top;
-            document.body.style.userSelect = "none";
-          }
+        // Mouse
+        handle.addEventListener('mousedown', e => {
+          dragging = true;
+          offsetX = e.clientX - widget.getBoundingClientRect().left;
+          offsetY = e.clientY - widget.getBoundingClientRect().top;
+          document.body.style.userSelect = "none";
         });
-        widget.addEventListener('touchstart', e => {
+        window.addEventListener('mousemove', e => {
+          if (!dragging) return;
+          moveAt(e.clientX, e.clientY);
+        });
+        window.addEventListener('mouseup', () => {
+          dragging = false;
+          document.body.style.userSelect = "";
+        });
+
+        // Touch
+        handle.addEventListener('touchstart', e => {
           const touch = e.touches[0];
-          if (e.target.id === 'translate-cover' || e.target === widget) {
-            dragging = true;
-            offsetX = touch.clientX - widget.getBoundingClientRect().left;
-            offsetY = touch.clientY - widget.getBoundingClientRect().top;
-            document.body.style.userSelect = "none";
-          }
+          dragging = true;
+          offsetX = touch.clientX - widget.getBoundingClientRect().left;
+          offsetY = touch.clientY - widget.getBoundingClientRect().top;
+          document.body.style.userSelect = "none";
         }, {passive:false});
+        window.addEventListener('touchmove', e => {
+          if (!dragging) return;
+          const touch = e.touches[0];
+          moveAt(touch.clientX, touch.clientY);
+        }, {passive:false});
+        window.addEventListener('touchend', () => {
+          dragging = false;
+          document.body.style.userSelect = "";
+        });
 
         function moveAt(x, y) {
-          // Limita a la pantalla
           const minX = 0;
           const minY = 0;
           const maxX = window.innerWidth - widget.offsetWidth;
@@ -158,25 +158,6 @@
           widget.style.bottom = "auto";
           widget.style.position = "fixed";
         }
-
-        window.addEventListener('mousemove', e => {
-          if (!dragging) return;
-          moveAt(e.clientX, e.clientY);
-        });
-        window.addEventListener('mouseup', () => {
-          dragging = false;
-          document.body.style.userSelect = "";
-        });
-
-        window.addEventListener('touchmove', e => {
-          if (!dragging) return;
-          const touch = e.touches[0];
-          moveAt(touch.clientX, touch.clientY);
-        }, {passive:false});
-        window.addEventListener('touchend', () => {
-          dragging = false;
-          document.body.style.userSelect = "";
-        });
       })();
     </script>
     <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
