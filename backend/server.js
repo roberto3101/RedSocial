@@ -1,3 +1,4 @@
+// backend/server.js
 import express from "express";
 import cors from "cors";
 import multer from "multer";
@@ -6,7 +7,10 @@ import path from "path";
 import "dotenv/config";
 import session from "express-session";
 import passport from "passport";
+import http from "http";
+import { Server as SocketServer } from "socket.io";
 
+// ─────────── Importa tus rutas ───────────
 import profileRoutes     from "./routes/profile.js";
 import postsRoutes       from "./routes/posts.js";
 import authRoutes        from "./routes/auth.js";
@@ -16,10 +20,12 @@ import searchRouter      from "./routes/search.js";
 import chatsRouter       from "./routes/chats.js";
 import "./passport.js";
 
+// ─────────── Setup Express y HTTP server ───────────
 const app  = express();
+const server = http.createServer(app);
 const PORT = process.env.PORT || 3001;
 
-// ─────────── CORS seguro para producción y desarrollo ───────────
+// ─────────── CORS seguro ───────────
 const allowedOrigins = [
   process.env.FRONT_URL,                 // producción
   "http://localhost:5173",               // desarrollo vite
@@ -28,7 +34,6 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: function(origin, callback) {
-    // Permite peticiones sin origin (como Postman) o si está permitido
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -43,7 +48,6 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // ─────────── Rutas API ───────────
 app.get("/", (_req, res) => res.send("OK"));
-
 app.use("/api/search",      searchRouter);
 app.use("/api/projects",    projectsRoutes);
 app.use("/api/chat-search", chatSearchRouter);
@@ -75,26 +79,58 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } });
 
-// ******* CAMBIO AQUÍ: CloudFront en producción *******
 app.post("/api/upload-image", upload.single("image"), (req, res) => {
   if (!req.file) return res.status(400).json({ error: "No se subió imagen" });
-
   let baseUrl;
   if (process.env.NODE_ENV === "production") {
     baseUrl = "https://d315m7tpvzh3ta.cloudfront.net"; // <--- TU URL DE CLOUD
   } else {
     baseUrl = `${req.protocol}://${req.headers.host}`;
   }
-
   res.json({ url: `${baseUrl}/uploads/${req.file.filename}` });
 });
-// ******* FIN DEL CAMBIO *******
 
 app.use("/api/profile", profileRoutes);
 app.use("/api/posts",   postsRoutes);
 app.use("/auth",        authRoutes);
 
+// ─────────── SOCKET.IO para mensajes en tiempo real ───────────
+const io = new SocketServer(server, {
+  cors: {
+    origin: allowedOrigins,
+    credentials: true
+  }
+});
+
+let onlineUsers = {};
+
+io.on("connection", (socket) => {
+  // Recibe el username al conectar
+  socket.on("register", (username) => {
+    onlineUsers[username] = socket.id;
+    socket.username = username;
+  });
+
+  // Reenvía mensaje privado en tiempo real
+  socket.on("private-message", ({ to, message }) => {
+    const targetSocketId = onlineUsers[to];
+    if (targetSocketId) {
+      io.to(targetSocketId).emit("private-message", {
+        from: socket.username,
+        message
+      });
+    }
+  });
+
+  // Limpia al desconectar
+  socket.on("disconnect", () => {
+    if (socket.username) {
+      delete onlineUsers[socket.username];
+    }
+  });
+});
+
 // ─────────── Arranque ───────────
-app.listen(PORT, () =>
-  console.log(`✅ API corriendo en http://localhost:${PORT}`)
+server.listen(PORT, () =>
+  console.log(`✅ API y WebSocket corriendo en http://localhost:${PORT}`)
 );
