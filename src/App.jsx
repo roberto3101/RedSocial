@@ -25,67 +25,72 @@ import "./components/EditPostModal"; // registra el modal globalmente si lo nece
 import ProfilePage from "./pages/Profile/ProfilePage";
 import ChatWidget from "./components/ChatWidget"; // 👈 IMPORTANTE: asegúrate de que aquí esté tu componente actualizado
 
+import { SocketProvider } from "./context/SocketContext"; // 👈 AÑADIDO
+
 /* --------------------------------------------------- */
 export default function App() {
   return (
     <AuthProvider>
       <ProfileProvider>
-        <BrowserRouter>
-          <Routes>
-            {/* ----------- Rutas públicas ----------- */}
-            <Route path="/" element={<Home />} />
+        <SocketProvider> {/* 👈 ENVUELVE TODO CON SocketProvider */}
+          {/* 👇 Añadimos basename para GitHub Pages */}
+          <BrowserRouter basename="/RedSocial">
+            <Routes>
+              {/* ----------- Rutas públicas ----------- */}
+              <Route path="/" element={<Home />} />
 
-            {/* ----------- Proyectos global y por usuario ----------- */}
-            <Route path="/projects" element={<Projects />} />
-            <Route path="/projects/:username" element={<Projects />} />
-            <Route path="/profile/:username/projects" element={<Projects />} />
-            <Route path="/user/:username/projects" element={<Projects />} />
+              {/* ----------- Proyectos global y por usuario ----------- */}
+              <Route path="/projects" element={<Projects />} />
+              <Route path="/projects/:username" element={<Projects />} />
+              <Route path="/profile/:username/projects" element={<Projects />} />
+              <Route path="/user/:username/projects" element={<Projects />} />
 
-            {/* ----------- Auth ----------- */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/verify-email" element={<VerifyEmail />} />
-            <Route path="/oauth/success" element={<OAuthSuccess />} />
+              {/* ----------- Auth ----------- */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/verify-email" element={<VerifyEmail />} />
+              <Route path="/oauth/success" element={<OAuthSuccess />} />
 
-            {/* ----------- Blog por usuario ----------- */}
-            <Route path="/blog/user/:username" element={<UserBlog />} />
+              {/* ----------- Blog por usuario ----------- */}
+              <Route path="/blog/user/:username" element={<UserBlog />} />
 
-            {/* ----------- Rutas de blog (públicas) ----------- */}
-            <Route path="/blog" element={<BlogIndex />} />
-            <Route path="/blog/:slug" element={<PostPage />} />
+              {/* ----------- Rutas de blog (públicas) ----------- */}
+              <Route path="/blog" element={<BlogIndex />} />
+              <Route path="/blog/:slug" element={<PostPage />} />
 
-            {/* ----------- Rutas protegidas ----------- */}
-            <Route
-              path="/create-profile"
-              element={
-                <ProtectedRoute>
-                  <CreateProfile />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/blog/nuevo"
-              element={
-                <ProtectedRoute>
-                  <PostForm />
-                </ProtectedRoute>
-              }
-            />
+              {/* ----------- Rutas protegidas ----------- */}
+              <Route
+                path="/create-profile"
+                element={
+                  <ProtectedRoute>
+                    <CreateProfile />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/blog/nuevo"
+                element={
+                  <ProtectedRoute>
+                    <PostForm />
+                  </ProtectedRoute>
+                }
+              />
 
-            {/* ----------- Perfil público y de visitante ----------- */}
-            <Route path="/profile/:username" element={<ProfilePage />} />
-            <Route path="/user/:username" element={<ProfilePage />} /> {/* 👈 PERFIL VISITADO */}
+              {/* ----------- Perfil público y de visitante ----------- */}
+              <Route path="/profile/:username" element={<ProfilePage />} />
+              <Route path="/user/:username" element={<ProfilePage />} /> {/* 👈 PERFIL VISITADO */}
 
-            {/* ------------- 404 ------------- */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+              {/* ------------- 404 ------------- */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
 
-          {/* Widget de chat flotante */}
-          <ChatWidget />
+            {/* Widget de chat flotante */}
+            <ChatWidget />
 
-          {/* Cursor personalizado */}
-          {createPortal(<CustomCursor />, document.body)}
-        </BrowserRouter>
+            {/* Cursor personalizado */}
+            {createPortal(<CustomCursor />, document.body)}
+          </BrowserRouter>
+        </SocketProvider>
       </ProfileProvider>
     </AuthProvider>
   );

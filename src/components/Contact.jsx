@@ -75,7 +75,7 @@ export default function Contact({ profile: profileProp }) {
   return (
     <section id="contact" className="contact-section">
       <div className="container contact-wrapper">
-        <h2 className="contact-title">¡Ponte en contacto!</h2>
+        <h2 className="contact-title">¡Ponte en contacto con el desarrollador!</h2>
         <form
           ref={formRef}
           onSubmit={handleSubmit}

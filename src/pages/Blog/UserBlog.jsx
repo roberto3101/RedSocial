@@ -2,6 +2,7 @@ import { Link, useNavigate, useLocation, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import EditPostModal from "../../components/EditPostModal";
 import { useProfile } from "../../context/ProfileContext";
+import { API_BASE, authHeader } from "../../lib/apiBase";
 
 export default function UserBlog() {
   const { username } = useParams();
@@ -13,11 +14,10 @@ export default function UserBlog() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Solo el dueño puede editar/eliminar/agregar
   const isOwner = profile?.username === username;
 
   const fetchPosts = () => {
-    fetch(`http://localhost:3001/api/posts/user/${username}`)
+    fetch(`${API_BASE}/api/posts/user/${username}`)
       .then((res) => res.json())
       .then(setPosts)
       .catch(console.error);
@@ -25,18 +25,16 @@ export default function UserBlog() {
 
   useEffect(() => {
     fetchPosts();
-    // eslint-disable-next-line
   }, [username]);
 
   const deletePost = async (slug) => {
     if (!window.confirm("¿Estás seguro de eliminar este artículo?")) return;
 
     try {
-      const token = localStorage.getItem("jwt");
-      const res = await fetch(`http://localhost:3001/api/posts/${slug}`, {
+      const res = await fetch(`${API_BASE}/api/posts/${slug}`, {
         method: "DELETE",
         headers: {
-          "Authorization": `Bearer ${token}`,
+          ...authHeader(),
         },
       });
       if (!res.ok) throw new Error("Error al eliminar");
@@ -50,7 +48,7 @@ export default function UserBlog() {
 
   const openEditModal = async (post) => {
     try {
-      const res = await fetch(`http://localhost:3001/api/posts/${post.slug}`);
+      const res = await fetch(`${API_BASE}/api/posts/${post.slug}`);
       if (!res.ok) throw new Error("No se pudo obtener el artículo");
       const data = await res.json();
       setPostToEdit(data);
@@ -61,7 +59,6 @@ export default function UserBlog() {
     }
   };
 
-  // Lógica para el botón volver
   function handleBack(e) {
     e.preventDefault();
     if (location.key !== "default") {
@@ -83,14 +80,12 @@ export default function UserBlog() {
         >
           ← Volver
         </a>
-
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <h2>Blog de {username}</h2>
           {isOwner && (
             <Link to="/blog/nuevo" className="btn-primary">+ Nuevo artículo</Link>
           )}
         </div>
-
         <div className="posts-grid">
           {posts.length === 0 && (
             <p style={{ opacity: 0.6, marginTop: "2em" }}>
@@ -115,7 +110,6 @@ export default function UserBlog() {
             </div>
           ))}
         </div>
-
         {modalOpen && postToEdit && (
           <EditPostModal
             isOpen={modalOpen}
@@ -128,5 +122,3 @@ export default function UserBlog() {
     </section>
   );
 }
-
-// src/pages/Blog/UserBlog.jsx

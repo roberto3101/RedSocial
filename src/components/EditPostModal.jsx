@@ -1,7 +1,7 @@
-// src/components/EditPostModal.jsx
 import { useEffect, useState } from "react";
 import Modal from "react-modal";
 import { RichTextEditor } from "@mantine/rte";
+import { API_BASE, authHeader } from "../lib/apiBase";
 Modal.setAppElement("#root");
 Modal.defaultStyles.overlay.zIndex = 100;
 
@@ -27,12 +27,11 @@ export default function EditPostModal({ isOpen, onClose, post, onSave }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem("jwt");
-      const res = await fetch(`http://localhost:3001/api/posts/${post.slug}`, {
+      const res = await fetch(`${API_BASE}/api/posts/${post.slug}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          ...authHeader()
         },
         body: JSON.stringify(formData)
       });

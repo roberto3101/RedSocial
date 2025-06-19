@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { getPosts } from "../../lib/posts";
 import EditPostModal from "../../components/EditPostModal";
 import { useProfile } from "../../context/ProfileContext";
+import { API_BASE, authHeader } from "../../lib/apiBase";
 
 // <---- AQUÍ DEFINES EL USERNAME DEL OWNER (ajústalo a tu caso)
 const OWNER_USERNAME = "rocos2";
@@ -17,12 +18,10 @@ export default function BlogIndex() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Solo muestra los posts del dueño principal
   const fetchPosts = () => {
     getPosts().then((data) => {
       const seen = new Set();
       const filtered = data.filter((post) => {
-        // Solo posts del OWNER
         if (post.author !== OWNER_USERNAME) return false;
         if (seen.has(post.slug)) return false;
         seen.add(post.slug);
@@ -36,17 +35,15 @@ export default function BlogIndex() {
     fetchPosts();
   }, []);
 
-  // Solo el dueño real puede hacer CRUD
   const isOwner = (post) => profile?.username === OWNER_USERNAME && post.author === OWNER_USERNAME;
 
   const deletePost = async (slug) => {
     if (!confirm("¿Estás seguro de eliminar este artículo?")) return;
     try {
-      const token = localStorage.getItem("jwt");
-      const res = await fetch(`http://localhost:3001/api/posts/${slug}`, {
+      const res = await fetch(`${API_BASE}/api/posts/${slug}`, {
         method: "DELETE",
         headers: {
-          "Authorization": `Bearer ${token}`,
+          ...authHeader(),
         },
       });
       if (!res.ok) throw new Error("Error al eliminar");
@@ -60,7 +57,7 @@ export default function BlogIndex() {
 
   const openEditModal = async (post) => {
     try {
-      const res = await fetch(`http://localhost:3001/api/posts/${post.slug}`);
+      const res = await fetch(`${API_BASE}/api/posts/${post.slug}`);
       if (!res.ok) throw new Error("No se pudo obtener el artículo");
       const data = await res.json();
       setPostToEdit(data);
@@ -71,7 +68,6 @@ export default function BlogIndex() {
     }
   };
 
-  // Lógica para volver atrás
   function handleBack(e) {
     e.preventDefault();
     if (location.key !== "default") {
@@ -95,7 +91,6 @@ export default function BlogIndex() {
         </a>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <h2>Blog</h2>
-          {/* Solo el dueño puede ver el botón */}
           {profile?.username === OWNER_USERNAME && (
             <Link to="/blog/nuevo" className="btn-primary">+ Nuevo artículo</Link>
           )}
@@ -129,4 +124,3 @@ export default function BlogIndex() {
     </section>
   );
 }
-// Asegúrate de que el CSS esté importado en tu archivo principal o en el componente

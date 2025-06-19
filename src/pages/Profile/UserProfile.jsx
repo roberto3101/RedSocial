@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { API_BASE } from "../../lib/apiBase";
 
 export default function UserProfile() {
   const { username } = useParams();
@@ -11,7 +12,7 @@ export default function UserProfile() {
     let alive = true;
     setLoading(true);
     axios
-      .get(`/api/profile/${username}`)
+      .get(`${API_BASE}/api/profile/${username}`)
       .then((res) => alive && setProfile(res.data))
       .catch(() => alive && setProfile(null))
       .finally(() => alive && setLoading(false));

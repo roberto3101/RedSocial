@@ -1,9 +1,12 @@
-const API_URL = `${import.meta.env.VITE_API_URL}/api/posts`;
+// src/lib/posts.js
+export const API_BASE = import.meta.env.VITE_API_URL;
 
 function authHeader() {
   const token = localStorage.getItem("jwt");
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
+
+const API_URL = `${API_BASE}/api/posts`;
 
 export async function getPosts() {
   const res = await fetch(API_URL, { headers: authHeader() });

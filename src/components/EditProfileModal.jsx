@@ -1,7 +1,7 @@
-// src/components/EditProfileModal.jsx
 import { useEffect, useState, useRef } from "react";
 import Modal from "react-modal";
 import { useProfile } from "../context/ProfileContext";
+import { API_BASE, authHeader } from "../lib/apiBase";
 
 Modal.setAppElement("#root");
 
@@ -16,12 +16,10 @@ export default function EditProfileModal({ isOpen, onClose, onSaved }) {
     setForm({ ...profile });
   }, [profile, isOpen]);
 
-  // Cambios en inputs generales
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // Subida de imagen (avatar)
   const handleAvatarChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -29,9 +27,10 @@ export default function EditProfileModal({ isOpen, onClose, onSaved }) {
     try {
       const data = new FormData();
       data.append("image", file);
-      const res = await fetch("http://localhost:3001/api/upload-image", {
+      const res = await fetch(`${API_BASE}/api/upload-image`, {
         method: "POST",
-        body: data
+        body: data,
+        headers: { ...authHeader() }
       });
       const json = await res.json();
       if (json.url) setForm(f => ({ ...f, avatar: json.url }));
@@ -43,7 +42,6 @@ export default function EditProfileModal({ isOpen, onClose, onSaved }) {
     }
   };
 
-  // Subida de archivo PDF (CV)
   const handleCVChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -54,10 +52,11 @@ export default function EditProfileModal({ isOpen, onClose, onSaved }) {
     setUploading(true);
     try {
       const data = new FormData();
-      data.append("image", file); // Usa la misma ruta de imágenes
-      const res = await fetch("http://localhost:3001/api/upload-image", {
+      data.append("image", file);
+      const res = await fetch(`${API_BASE}/api/upload-image`, {
         method: "POST",
-        body: data
+        body: data,
+        headers: { ...authHeader() }
       });
       const json = await res.json();
       if (json.url) setForm(f => ({ ...f, cv: json.url }));
@@ -69,7 +68,6 @@ export default function EditProfileModal({ isOpen, onClose, onSaved }) {
     }
   };
 
-  // Validar formato WhatsApp antes de guardar (SIEMPRE debe tener +)
   const validateWhatsApp = (number) => /^\+\d{7,20}$/.test(number);
 
   const handleSave = async (e) => {
@@ -78,13 +76,12 @@ export default function EditProfileModal({ isOpen, onClose, onSaved }) {
       alert("El número de WhatsApp debe estar en formato internacional: Ejemplo +51938192665");
       return;
     }
-    const token = localStorage.getItem("jwt");
     try {
-      const res = await fetch("http://localhost:3001/api/profile", {
+      const res = await fetch(`${API_BASE}/api/profile`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
+          ...authHeader()
         },
         body: JSON.stringify(form)
       });
@@ -123,8 +120,6 @@ export default function EditProfileModal({ isOpen, onClose, onSaved }) {
         <label>Proyectos deployados
           <input type="number" name="deployed" value={form.deployed || 0} onChange={handleChange} min={0} />
         </label>
-
-        {/* Adjuntar foto de perfil (avatar) */}
         <label>
           Adjuntar foto de perfil (avatar)
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -142,8 +137,6 @@ export default function EditProfileModal({ isOpen, onClose, onSaved }) {
             )}
           </div>
         </label>
-
-        {/* Adjuntar CV */}
         <label>
           Adjuntar CV (PDF)
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -163,7 +156,6 @@ export default function EditProfileModal({ isOpen, onClose, onSaved }) {
             )}
           </div>
         </label>
-
         <label>Email de contacto
           <input name="email" type="email" value={form.email || ""} onChange={handleChange} />
         </label>

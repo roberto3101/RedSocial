@@ -3,12 +3,15 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://roberto3101.github.io/RedSocial/",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "netlify": "netlify dev"
+    "netlify": "netlify dev",
+    "predeploy": "npm run build && copy dist\\index.html dist\\404.html",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@emotion/cache": "^11.14.0",
@@ -38,6 +41,7 @@
     "react-dom": "^18.2.0",
     "react-modal": "^3.16.3",
     "react-router-dom": "^7.6.1",
+    "socket.io-client": "^4.8.1",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
@@ -49,6 +53,7 @@
     "eslint": "^9.25.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",
+    "gh-pages": "^6.0.0",
     "globals": "^16.0.0",
     "netlify-cli": "^21.5.0",
     "vite": "^6.3.5"

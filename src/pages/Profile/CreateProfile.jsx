@@ -9,11 +9,12 @@ export default function CreateProfile() {
   const { profile, setProfile } = useProfile();
   const { token } = useAuth();
 
-  /* --- estado local --- */
   const [preview, setPreview] = useState(null);
-  const [avatar, setAvatar]   = useState(null);
+  const [avatar, setAvatar] = useState(null);
+  const [cv, setCv] = useState(null);
+  const [cvUrl, setCvUrl] = useState(profile?.cv || "");
   const [loading, setLoading] = useState(false);
-  const [error, setError]     = useState("");
+  const [error, setError] = useState("");
 
   const [form, setForm] = useState({
     username:  "",
@@ -27,7 +28,6 @@ export default function CreateProfile() {
     about:     "",
   });
 
-  /* Prefill cuando ya hay perfil */
   useEffect(() => {
     if (!profile) return;
     setForm({
@@ -42,9 +42,10 @@ export default function CreateProfile() {
       about:     profile.about     || "",
     });
     if (profile.avatar) setPreview(profile.avatar);
+    if (profile.cv) setCvUrl(profile.cv);
   }, [profile]);
 
-  /* --------- helpers --------- */
+  // Subida de avatar
   const handleFile = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -52,10 +53,22 @@ export default function CreateProfile() {
     setPreview(URL.createObjectURL(file));
   };
 
+  // Subida de CV
+  const handleCvFile = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.type !== "application/pdf") {
+      alert("Solo se permite formato PDF para el CV.");
+      return;
+    }
+    setCv(file);
+    setCvUrl(""); // Limpia la vista previa hasta subirlo
+  };
+
   const handleChange = (e) =>
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
-  /* --------- submit --------- */
+  // Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -66,11 +79,10 @@ export default function CreateProfile() {
       setLoading(false);
       return;
     }
-
     const authHeader = { Authorization: `Bearer ${token}` };
 
     try {
-      /* 1) sube imagen si la cambió */
+      // 1. Sube avatar si la cambió
       let avatarUrl = profile?.avatar || "";
       if (avatar) {
         const fd = new FormData();
@@ -88,38 +100,54 @@ export default function CreateProfile() {
         avatarUrl = data.url;
       }
 
-      /* 2) upsert perfil (POST /api/profile) */
+      // 2. Sube CV si lo subió
+      let finalCvUrl = profile?.cv || "";
+      if (cv) {
+        const fd = new FormData();
+        fd.append("image", cv);
+        const { data } = await axios.post(
+          `${import.meta.env.VITE_API_URL}/api/upload-image`,
+          fd,
+          {
+            headers: {
+              ...authHeader,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        finalCvUrl = data.url;
+      }
+
+      // 3. Upsert perfil (guarda avatar y CV en el perfil)
       const { data: saved } = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/profile`,
-        { ...form, avatar: avatarUrl },
+        { ...form, avatar: avatarUrl, cv: finalCvUrl },
         { headers: authHeader }
       );
 
-      /* 3) actualiza contexto */
-      setProfile(saved);
+      setProfile(saved);  // <--- El contexto se actualiza aquí con el nuevo CV
 
-      /* 4) redirige al perfil público */
+      if (saved.cv) setCvUrl(saved.cv); // Esto asegura que la vista previa del enlace funcione tras crear perfil
+
       if (saved.username) {
         navigate(`/profile/${saved.username}`);
       } else {
         navigate("/");
       }
     } catch (err) {
-      console.error(err);
       setError(
         err.response?.data?.msg ||
-          "No se pudo guardar el perfil. Intenta luego."
+        "No se pudo guardar el perfil. Intenta luego."
       );
     } finally {
       setLoading(false);
     }
   };
 
-  /* --------- UI --------- */
+  // Render
   return (
     <main className="container create-profile">
       <h1>{profile ? "Editar" : "Completa"} tu perfil</h1>
-
       <form onSubmit={handleSubmit} className="profile-form">
         {/* AVATAR */}
         <div className="avatar-field">
@@ -134,90 +162,57 @@ export default function CreateProfile() {
           <p>Foto de perfil</p>
         </div>
 
-        {/* DATOS BÁSICOS */}
+        {/* DATOS */}
         <div className="grid two-cols">
           <label>
             Nombre(s)
-            <input
-              name="firstName"
-              value={form.firstName}
-              onChange={handleChange}
-            />
+            <input name="firstName" value={form.firstName} onChange={handleChange} />
           </label>
           <label>
             Apellidos
-            <input
-              name="lastName"
-              value={form.lastName}
-              onChange={handleChange}
-            />
+            <input name="lastName" value={form.lastName} onChange={handleChange} />
           </label>
         </div>
-
         <label>
           Nombre de usuario
-          <input
-            name="username"
-            required
-            value={form.username}
-            onChange={handleChange}
-          />
+          <input name="username" required value={form.username} onChange={handleChange} />
         </label>
-
         <label>
           Correo
-          <input
-            type="email"
-            name="email"
-            required
-            value={form.email}
-            onChange={handleChange}
-          />
+          <input type="email" name="email" required value={form.email} onChange={handleChange} />
         </label>
-
         <label>
           Teléfono
           <input name="phone" value={form.phone} onChange={handleChange} />
         </label>
-
         <label>
           Sitio web
-          <input
-            name="website"
-            placeholder="https://"
-            value={form.website}
-            onChange={handleChange}
-          />
+          <input name="website" placeholder="https://" value={form.website} onChange={handleChange} />
         </label>
-
         <label>
           Idiomas
-          <input
-            name="languages"
-            placeholder="Español, Inglés…"
-            value={form.languages}
-            onChange={handleChange}
-          />
+          <input name="languages" placeholder="Español, Inglés…" value={form.languages} onChange={handleChange} />
         </label>
-
         <label>
           Intereses - áreas en las que deseas desarrollarte
-          <input
-            name="interests"
-            placeholder="Frontend, IA, DevOps…"
-            value={form.interests}
-            onChange={handleChange}
-          />
+          <input name="interests" placeholder="Frontend, IA, DevOps…" value={form.interests} onChange={handleChange} />
         </label>
-
         <label>
           Sobre mí
-          <textarea
-            name="about"
-            rows={4}
-            value={form.about}
-            onChange={handleChange}
-          />
+          <textarea name="about" rows={4} value={form.about} onChange={handleChange} />
+        </label>
+
+        {/* Campo subir CV */}
+        <label>
+          Adjuntar CV (PDF)
+          <input type="file" accept="application/pdf" onChange={handleCvFile} />
+          {cvUrl && (
+            <span style={{ display: "block", marginTop: 4, fontSize: 13 }}>
+              <a href={cvUrl} target="_blank" rel="noopener noreferrer">
+                Ver CV actual
+              </a>
+            </span>
+          )}
         </label>
 
         {error && <p className="form-error">{error}</p>}

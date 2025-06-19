@@ -1,27 +1,37 @@
 import { useEffect, useState } from "react";
 import { Loader } from "lucide-react";
+import { API_BASE, authHeader } from "../lib/apiBase";
+import { useSocket } from "../context/SocketContext";
 
 export default function ChatNotificationsPanel({ onOpenChat }) {
   const [chats, setChats] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { newMsg } = useSocket();
+
+  // Función para recargar chats
+  const fetchChats = async () => {
+    setLoading(true);
+    const res = await fetch(`${API_BASE}/api/chats`, {
+      headers: { ...authHeader() }
+    });
+    const data = await res.json();
+    setChats(Array.isArray(data) ? data : []);
+    setLoading(false);
+  };
 
   useEffect(() => {
     let isMounted = true;
-    const fetchChats = async () => {
-      setLoading(true);
-      const token = localStorage.getItem("jwt");
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/chats`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const data = await res.json();
-      if (isMounted) {
-        setChats(Array.isArray(data) ? data : []);
-        setLoading(false);
-      }
-    };
     fetchChats();
     return () => { isMounted = false; };
   }, []);
+
+  // Si llega un nuevo mensaje, refresca la lista de chats
+  useEffect(() => {
+    if (newMsg) {
+      fetchChats();
+    }
+    // eslint-disable-next-line
+  }, [newMsg]);
 
   if (loading) {
     return (
@@ -78,7 +88,6 @@ export default function ChatNotificationsPanel({ onOpenChat }) {
                 : <i>Sin mensajes aún</i>}
             </div>
           </div>
-          {/* Aquí podrías agregar un badge de "no leído" */}
         </div>
       ))}
     </div>

@@ -1,25 +1,22 @@
-// src/components/ChatWidget.jsx
-
 import { useState } from "react";
 import { MessageSquare, PlusCircle } from "lucide-react";
 import { useProfile } from "../context/ProfileContext";
 import { useNavigate } from "react-router-dom";
 import ChatNotificationsPanel from "./ChatNotificationsPanel";
 import FloatingChatWindow from "./FloatingChatWindow";
+import { API_BASE, authHeader } from "../lib/apiBase";
 
 export default function ChatWidget() {
   const [open, setOpen] = useState(false);
   const { profile } = useProfile();
   const navigate = useNavigate();
 
-  // Nuevo: manejar estado para mostrar búsqueda o historial
   const [showSearch, setShowSearch] = useState(false);
   const [search, setSearch] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [activeChatUser, setActiveChatUser] = useState(null);
 
-  // Buscar usuarios SOLO si está logueado
   const handleSearch = async (e) => {
     const q = e.target.value;
     setSearch(q);
@@ -31,10 +28,9 @@ export default function ChatWidget() {
 
     setLoading(true);
     try {
-      const token = localStorage.getItem("jwt");
-      const url = `${import.meta.env.VITE_API_URL}/api/chat-search?q=${encodeURIComponent(q)}`;
+      const url = `${API_BASE}/api/chat-search?q=${encodeURIComponent(q)}`;
       const res = await fetch(url, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { ...authHeader() }
       });
       if (res.ok) {
         const data = await res.json();
@@ -51,21 +47,16 @@ export default function ChatWidget() {
 
   return (
     <div className="chat-widget-container">
-      {/* Botón flotante */}
       <div className="chat-widget-toggle" onClick={() => setOpen(o => !o)}>
         <MessageSquare size={22} style={{ marginRight: 8 }} />
         <span>Chats</span>
       </div>
-
-      {/* Ventana de chat flotante */}
       {activeChatUser && (
         <FloatingChatWindow
           user={activeChatUser}
           onClose={() => setActiveChatUser(null)}
         />
       )}
-
-      {/* Panel expandido */}
       {open && (
         <div className="chat-widget-panel">
           <div className="chat-widget-header">
@@ -105,7 +96,6 @@ export default function ChatWidget() {
               </div>
             ) : (
               <div>
-                {/* Botón para cambiar entre historial y búsqueda */}
                 <div style={{ display: "flex", alignItems: "center", marginBottom: 10 }}>
                   <button
                     className="mmorpg-history-btn"
@@ -139,8 +129,6 @@ export default function ChatWidget() {
                     Nuevo chat
                   </button>
                 </div>
-
-                {/* Panel de historial o búsqueda */}
                 {!showSearch ? (
                   <ChatNotificationsPanel onOpenChat={user => {
                     setActiveChatUser(user);
@@ -166,8 +154,6 @@ export default function ChatWidget() {
                         fontSize: "1rem",
                       }}
                     />
-
-                    {/* Resultados */}
                     {loading && (
                       <div style={{ color: "#a9a9ee", marginTop: 10, textAlign: "center" }}>
                         Buscando usuarios...
@@ -197,8 +183,8 @@ export default function ChatWidget() {
                               transition: "background 0.15s"
                             }}
                             onClick={() => {
-                              setActiveChatUser(user); // ABRE el chat con el usuario seleccionado
-                              setOpen(false); // Cierra el panel de búsqueda
+                              setActiveChatUser(user);
+                              setOpen(false);
                               setShowSearch(false);
                               setSearch("");
                               setResults([]);

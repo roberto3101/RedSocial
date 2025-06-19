@@ -1,10 +1,51 @@
-// src/pages/Projects/Projects.jsx
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useProfile } from "../../../context/ProfileContext";
+import { API_BASE } from "../../../lib/apiBase";
 
-// Modal para editar/agregar
+// Detecta base path dinámico para GitHub Pages ("/RedSocial") o desarrollo ("/")
+const BASE_PATH = window.location.pathname.startsWith("/RedSocial")
+  ? "/RedSocial"
+  : "";
+
+// PROYECTOS DEMO para landing o modo demo
+const demoProjects = [
+  {
+    id: "demo-1",
+    image: `${BASE_PATH}/imagenes/BiblioSystem.jpg`,
+    name: "BiblioSystem",
+    brief: "Sistema de gestión de bibliotecas con login, roles y CRUD para libros y alumnos.",
+    technologies: ["Java", "MySQL", "Tomcat"],
+    repo: "https://github.com/roberto3101"
+  },
+  {
+    id: "demo-2",
+    image: `${BASE_PATH}/imagenes/CRUD.jpg`,
+    name: "CRUD App",
+    brief: "CRUD sencillo con React y MySQL.",
+    technologies: ["React", "SqlServer", "Node.js"],
+    repo: "https://github.com/roberto3101"
+  },
+  {
+    id: "demo-3",
+    image: `${BASE_PATH}/imagenes/Thenx.png`,
+    name: "Web de ejercicios",
+    brief: "Aplicación para gestionar rutinas y progreso de entrenamiento.",
+    technologies: ["HTML", "CSS", "JavaScript"],
+    repo: "https://github.com/roberto3101"
+  },
+  {
+    id: "demo-4",
+    image: `${BASE_PATH}/imagenes/highrise.png`,
+    name: "Bots JS / Node",
+    brief: "Bots en Javascript + Node.js para automatizar emotes, teleports, roles y donaciones.",
+    technologies: ["JavaScript", "Node.js"],
+    repo: "https://github.com/roberto3101"
+  }
+];
+
+// Modal para agregar/editar proyectos
 function ProjectModal({ open, onClose, onSave, initial }) {
   const [form, setForm] = useState(
     initial || {
@@ -30,7 +71,7 @@ function ProjectModal({ open, onClose, onSave, initial }) {
 
   if (!open) return null;
 
-  // Input de tecnologías tipo tags
+  // Tags input para tecnologías
   const handleTechKeyDown = (e) => {
     if (
       (e.key === " " || e.key === "Enter" || e.key === ",") &&
@@ -68,7 +109,7 @@ function ProjectModal({ open, onClose, onSave, initial }) {
     if (form.imageFile) {
       const imgData = new FormData();
       imgData.append("image", form.imageFile);
-      const res = await axios.post("/api/upload-image", imgData, {
+      const res = await axios.post(`${API_BASE}/api/upload-image`, imgData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       dataToSend.image = res.data.url;
@@ -167,7 +208,7 @@ function ProjectModal({ open, onClose, onSave, initial }) {
   );
 }
 
-// Componente principal
+// COMPONENTE PRINCIPAL
 export default function Projects() {
   const { username } = useParams();
   const [projects, setProjects] = useState([]);
@@ -176,17 +217,24 @@ export default function Projects() {
   const { profile } = useProfile();
   const navigate = useNavigate();
 
-  // Si no estamos en /projects/:username, mostrar los proyectos del usuario logueado
+  // Determina usuario a mostrar
   const usuario = username || profile?.username;
 
+  // Si estamos en modo demo (sin usuario ni username)
+  const isDemo = !usuario;
+
   useEffect(() => {
-    if (!usuario) return;
+    if (isDemo) {
+      setProjects(demoProjects);
+      return;
+    }
     axios
-      .get(`/api/projects/${usuario}`)
+      .get(`${API_BASE}/api/projects/${usuario}`)
       .then((r) => setProjects(r.data))
       .catch(() => setProjects([]));
-  }, [usuario]);
+  }, [usuario, isDemo]);
 
+  // Solo el dueño puede editar
   const isOwner = profile && usuario && profile.username === usuario;
 
   // Botón volver: redirige al perfil correspondiente
@@ -200,14 +248,60 @@ export default function Projects() {
     }
   };
 
+  // GUARDAR proyecto (add/edit)
   const handleSave = async (data) => {
+    // Si estamos en modo demo, no se guarda en backend, solo en el array local
+    if (isDemo) {
+      setProjects((prev) =>
+        editing
+          ? prev.map((p) => (p.id === editing.id ? { ...editing, ...data } : p))
+          : [...prev, { ...data, id: "demo-" + (prev.length + 1) }]
+      );
+      setModalOpen(false);
+      setEditing(null);
+      return;
+    }
+
+    // Cambios reales: actualizar también la demo si es el usuario demo
+    if (profile?.username === "roberto3101") {
+      // Guarda el proyecto real
+      let res;
+      if (editing) {
+        res = await axios.put(`${API_BASE}/api/projects/${editing.id}`, data, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("jwt")}` },
+        });
+        setProjects((ps) => ps.map((p) => (p.id === editing.id ? res.data : p)));
+      } else {
+        res = await axios.post(`${API_BASE}/api/projects`, data, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("jwt")}` },
+        });
+        setProjects((ps) => [...ps, res.data]);
+      }
+
+      // ACTUALIZA los proyectos demo (opcional, solo localmente)
+      setTimeout(() => {
+        setProjects((prev) => {
+          // Reemplaza demoProjects locales también para demo inmediata
+          return prev.map((p) =>
+            p.id?.toString().startsWith("demo-")
+              ? { ...p, ...data }
+              : p
+          );
+        });
+      }, 400);
+      setModalOpen(false);
+      setEditing(null);
+      return;
+    }
+
+    // Usuarios normales
     if (editing) {
-      const res = await axios.put(`/api/projects/${editing.id}`, data, {
+      const res = await axios.put(`${API_BASE}/api/projects/${editing.id}`, data, {
         headers: { Authorization: `Bearer ${localStorage.getItem("jwt")}` },
       });
       setProjects((ps) => ps.map((p) => (p.id === editing.id ? res.data : p)));
     } else {
-      const res = await axios.post(`/api/projects`, data, {
+      const res = await axios.post(`${API_BASE}/api/projects`, data, {
         headers: { Authorization: `Bearer ${localStorage.getItem("jwt")}` },
       });
       setProjects((ps) => [...ps, res.data]);
@@ -216,9 +310,28 @@ export default function Projects() {
     setEditing(null);
   };
 
+  // ELIMINAR proyecto
   const handleDelete = async (id) => {
     if (!window.confirm("¿Eliminar este proyecto?")) return;
-    await axios.delete(`/api/projects/${id}`, {
+    // Modo demo: borra del array local
+    if (isDemo) {
+      setProjects((prev) => prev.filter((p) => p.id !== id));
+      return;
+    }
+    // Demo user: borra en backend real y en demo
+    if (profile?.username === "roberto3101") {
+      await axios.delete(`${API_BASE}/api/projects/${id}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("jwt")}` },
+      });
+      setProjects((ps) => ps.filter((p) => p.id !== id));
+      // Borra demo local
+      setTimeout(() => {
+        setProjects((prev) => prev.filter((p) => !p.id?.toString().startsWith("demo-")));
+      }, 400);
+      return;
+    }
+    // Usuarios normales
+    await axios.delete(`${API_BASE}/api/projects/${id}`, {
       headers: { Authorization: `Bearer ${localStorage.getItem("jwt")}` },
     });
     setProjects((ps) => ps.filter((p) => p.id !== id));
@@ -235,7 +348,8 @@ export default function Projects() {
           ← Volver al perfil
         </button>
         <h2 className="projects-title">
-          Proyectos {usuario && <span style={{ fontWeight: 400 }}>de {usuario}</span>}
+          Proyectos{" "}
+          {usuario ? <span style={{ fontWeight: 400 }}>de {usuario}</span> : <span style={{ fontWeight: 400 }}>(DEMO)</span>}
         </h2>
         {isOwner && (
           <div
@@ -265,9 +379,9 @@ export default function Projects() {
         )}
         <div className="project-grid">
           {projects.map(({ id, image, name, brief, technologies, repo }, idx) => (
-            <article key={id} className="project-card" style={{ position: "relative" }}>
+            <article key={id || idx} className="project-card" style={{ position: "relative" }}>
               <div className="project-thumb">
-                <img src={image || "/imagenes/default.png"} alt={name} className="project-img" />
+                <img src={image || `${BASE_PATH}/imagenes/default.png`} alt={name} className="project-img" />
                 <a
                   href={repo}
                   target="_blank"
@@ -282,7 +396,7 @@ export default function Projects() {
                     />
                   </svg>
                 </a>
-                {isOwner && (
+                {isOwner && !isDemo && (
                   <div style={{ position: "absolute", top: 12, right: 12, zIndex: 2, display: "flex", gap: 4 }}>
                     <button
                       title="Editar"

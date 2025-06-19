@@ -30,7 +30,8 @@ export default function SearchDropDown({ results, type, onClose }) {
               <span className="search-name">{item.name}</span>
               {item.about && (
                 <span className="search-user-about">
-                  {item.about.slice(0, 54)}{item.about.length > 54 ? "..." : ""}
+                  {item.about.slice(0, 54)}
+                  {item.about.length > 54 ? "..." : ""}
                 </span>
               )}
             </div>

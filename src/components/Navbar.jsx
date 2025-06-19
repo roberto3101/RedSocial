@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useProfile } from "../context/ProfileContext";
 import SearchDropDown from "./SearchDropDown";
 import axios from "axios";
+import { API_BASE } from "../lib/apiBase"; // ← Importante
 
 export default function Navbar({ profile: profileProp }) {
   const [open, setOpen] = useState(false);
@@ -49,12 +50,8 @@ export default function Navbar({ profile: profileProp }) {
     clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(async () => {
       try {
-        const url = `/api/search?type=${type}&q=${encodeURIComponent(query)}`;
-        // DEBUG: Muestra la petición y la respuesta
-        // Puedes quitar este console.log después
+        const url = `${API_BASE}/api/search?type=${type}&q=${encodeURIComponent(query)}`;
         const { data } = await axios.get(url);
-        // DEBUG:
-        // console.log("URL:", url, "DATA:", data);
         setResults(Array.isArray(data) ? data : []);
         setShowDropdown(true);
       } catch (err) {
@@ -119,12 +116,11 @@ export default function Navbar({ profile: profileProp }) {
             onClick={() => setOpen(false)}
           >
             <li><a href="#posts">Artículos</a></li>
-           <li>
-  <Link to={profile?.username ? `/projects/${profile.username}` : "/projects"}>
-    Proyectos
-  </Link>
-</li>
-
+            <li>
+              <Link to={profile?.username ? `/projects/${profile.username}` : "/projects"}>
+                Proyectos
+              </Link>
+            </li>
             <li><a href="#about">Sobre mí</a></li>
             <li>
               <a href="#contact">

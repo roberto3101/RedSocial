@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { RichTextEditor } from "@mantine/rte";
 import DOMPurify from "dompurify";
 import { useProfile } from "../../context/ProfileContext";
+import { API_BASE, authHeader } from "../../lib/apiBase";
 
 export default function PostForm() {
   const [formData, setFormData] = useState({
@@ -14,7 +15,7 @@ export default function PostForm() {
   });
 
   const navigate = useNavigate();
-  const { profile } = useProfile(); // ← usa el perfil autenticado
+  const { profile } = useProfile();
 
   useEffect(() => {
     const traducciones = {
@@ -66,7 +67,7 @@ export default function PostForm() {
       return;
     }
     try {
-      const resSlug = await fetch("http://localhost:3001/api/posts");
+      const resSlug = await fetch(`${API_BASE}/api/posts`);
       const posts = await resSlug.json();
       const slugExists = posts.some((p) => p.slug === formData.slug);
 
@@ -75,15 +76,12 @@ export default function PostForm() {
         return;
       }
 
-      // Solo manda los datos del formulario, el backend añade el author
       const dataToSend = { ...formData };
-
-      const token = localStorage.getItem("jwt");
-      const res = await fetch("http://localhost:3001/api/posts", {
+      const res = await fetch(`${API_BASE}/api/posts`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          ...authHeader(),
         },
         body: JSON.stringify(dataToSend),
       });
@@ -91,7 +89,6 @@ export default function PostForm() {
       if (!res.ok) throw new Error("Error al guardar el artículo");
       alert("✅ Artículo guardado correctamente");
 
-      // Redirige al blog personal del usuario
       navigate(`/blog/user/${profile.username}`);
 
     } catch (err) {
@@ -192,13 +189,12 @@ export default function PostForm() {
         </form>
       </section>
      <section className="preview-panel">
-  <h3>Vista previa en tiempo real</h3>
-  <div
-    className="preview-body article-content post-body"
-    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formData.body) }}
-  />
-</section>
-
+        <h3>Vista previa en tiempo real</h3>
+        <div
+          className="preview-body article-content post-body"
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formData.body) }}
+        />
+      </section>
     </>
   );
 }

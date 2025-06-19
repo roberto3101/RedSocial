@@ -886,315 +886,6 @@ body{ cursor:none; }
 
 
 
-/* ════════ LOGIN ULTRA-PRO STYLE (añade o reemplaza) ════════ */
-
-/* ---------- Pantalla completa con “constelaciones” animadas ---------- */
-@keyframes starScroll {
-  from { background-position: 0 0, 0 0, 0 0; }
-  to   { background-position: 2000px 1000px, 1000px 500px, 0 0; }
-}
-
-.login-page {
-  position: relative;
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
-  padding: 2rem;
-  /* tres capas de “espacio” + gradiente diagonal */
-  background:
-    radial-gradient(circle at 40% 30%, rgba(20,233,86,0.15) 0%, transparent 60%),
-    radial-gradient(circle at 80% 80%, rgba(88,166,255,0.10) 0%, transparent 60%),
-    repeating-linear-gradient(180deg, transparent 0 2px, rgba(255,255,255,0.03) 2px 4px),
-    linear-gradient(135deg, var(--bg) 0%, #0a0d12 100%);
-  background-size: 1600px 1600px, 1600px 1600px, 600px 600px, 100% 100%;
-  animation: starScroll 40s linear infinite;
-  overflow: hidden;
-}
-
-/* ---------- Tarjeta glassmorphism con borde neón ---------- */
-.login-card {
-  position: relative;
-  width: 100%;
-  max-width: 420px;
-  padding: 2.75rem 2.25rem;
-  border-radius: var(--radius);
-  background: rgba(22, 27, 34, 0.55);                       /* glass */
-  backdrop-filter: blur(14px) saturate(160%);
-  -webkit-backdrop-filter: blur(14px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.55);
-}
-
-.login-card::before {                                        /* halo neón */
-  content: "";
-  position: absolute;
-  inset: -3px;
-  z-index: -1;
-  border-radius: inherit;
-  background: conic-gradient(
-    from 0deg,
-    var(--primary),
-    var(--accent),
-    var(--primary) 360deg
-  );
-  filter: blur(14px);
-  opacity: 0.45;
-  animation: rotateNeon 8s linear infinite;
-}
-@keyframes rotateNeon { to { transform: rotate(360deg); } }
-
-/* ---------- Título con brillo multicromático ---------- */
-.login-card h1 {
-  text-align: center;
-  font-size: 2rem;
-  margin-bottom: 2rem;
-  background: linear-gradient(90deg, var(--primary), var(--accent));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 1px 6px rgba(21, 0, 207, 0.6));
-}
-
-/* ---------- Inputs stealth tech ---------- */
-.login-form label {
-  display: block;
-  margin-bottom: 1.4rem;
-  font-weight: 600;
-  color: rgba(230, 237, 243, 0.85);
-}
-
-.login-form input {
-  width: 100%;
-  padding: 0.7rem 0.95rem;
-  border: 1px solid rgba(88, 166, 255, 0.15);
-  border-radius: calc(var(--radius) + 2px);
-  background: rgba(13,17,23,0.85);
-  color: var(--fg);
-  font-size: 0.95rem;
-  transition: border-color 0.25s, box-shadow 0.25s;
-}
-
-.login-form input:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(20,233,86,0.25);
-}
-
-/* ---------- Botón “warp” ---------- */
-.btn-login {
-  width: 100%;
-  margin-top: 1.75rem;
-  padding: 0.9rem 1.6rem;
-  font-weight: 700;
-  letter-spacing: .6px;
-  border: none;
-  border-radius: 9999px;
-  background: radial-gradient(circle at 30% 30%, var(--primary) 0%, var(--accent) 100%);
-  color: #0d1117;
-  box-shadow: 0 10px 28px -8px var(--primary);
-  transition: transform .25s cubic-bezier(.22,1,.36,1), box-shadow .25s;
-}
-
-.btn-login:hover,
-.btn-login:focus {
-  transform: translateY(-3px);
-  box-shadow: 0 16px 32px -10px var(--accent);
-}
-
-/* ---------- “¿No tienes cuenta?” ---------- */
-.login-extra {
-  margin-top: 1.75rem;
-  text-align: center;
-  font-size: .9rem;
-  color: rgba(200, 220, 240, .75);
-}
-
-.login-extra .link {
-  color: var(--accent);
-  font-weight: 700;
-  position: relative;
-}
-.login-extra .link::after {
-  content: "";
-  position: absolute;
-  left: 0; bottom: -2px;
-  width: 100%; height: 2px;
-  background: var(--accent);
-  transform: scaleX(0);
-  transition: transform .35s cubic-bezier(.22,1,.36,1);
-}
-.login-extra .link:hover::after { transform: scaleX(1); }
-
-
-
-/* ═══════ REGISTER PAGE (sin composes) ═══════ */
-
-/* ---------- Fondo animado idéntico al login ---------- */
-.register-page {
-  position: relative;
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
-  padding: 2rem;
-  background:
-    radial-gradient(circle at 40% 30%, rgba(20,233,86,0.15) 0%, transparent 60%),
-    radial-gradient(circle at 80% 80%, rgba(88,166,255,0.10) 0%, transparent 60%),
-    repeating-linear-gradient(180deg, transparent 0 2px, rgba(255,255,255,0.03) 2px 4px),
-    linear-gradient(135deg, var(--bg) 0%, #0a0d12 100%);
-  background-size: 1600px 1600px, 1600px 1600px, 600px 600px, 100% 100%;
-  animation: starScroll 40s linear infinite;
-  overflow: hidden;
-}
-
-/* ---------- Tarjeta glassmorphism + neón ---------- */
-.register-card {
-  position: relative;
-  width: 100%;
-  max-width: 420px;
-  padding: 2.75rem 2.25rem;
-  border-radius: var(--radius);
-  background: rgba(22, 27, 34, 0.55);
-  backdrop-filter: blur(14px) saturate(160%);
-  -webkit-backdrop-filter: blur(14px) saturate(160%);
-  border: 1px solid rgba(88, 166, 255, 0.18); /* leve borde azul */
-  box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.55);
-}
-
-.register-card::before {
-  content: "";
-  position: absolute;
-  inset: -3px;
-  z-index: -1;
-  border-radius: inherit;
-  background: conic-gradient(from 0deg, var(--accent), var(--primary), var(--accent) 360deg);
-  filter: blur(14px);
-  opacity: 0.45;
-  animation: rotateNeon 8s linear infinite;
-}
-
-/* ---------- Título degradado ---------- */
-.register-card h1 {
-  text-align: center;
-  font-size: 2rem;
-  margin-bottom: 2rem;
-  background: linear-gradient(90deg, var(--accent), var(--primary));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 1px 6px rgba(88,166,255,0.55));
-}
-
-/* ---------- Formulario ---------- */
-.register-form label {
-  display: block;
-  margin-bottom: 1.4rem;
-  font-weight: 600;
-  color: rgba(230, 237, 243, 0.85);
-}
-
-.register-form input {
-  width: 100%;
-  padding: 0.7rem 0.95rem;
-  border: 1px solid rgba(88, 166, 255, 0.15);
-  border-radius: calc(var(--radius) + 2px);
-  background: rgba(13,17,23,0.85);
-  color: var(--fg);
-  font-size: 0.95rem;
-  transition: border-color 0.25s, box-shadow 0.25s;
-}
-
-.register-form input:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(20,233,86,0.25);
-}
-
-/* ---------- Error de validación ---------- */
-.form-error {
-  margin: -0.5rem 0 0.75rem;
-  color: #ff6b6b;
-  font-size: 0.875rem;
-  text-align: center;
-}
-
-
-/* ───── Separador con línea tenue ───── */
-.divider {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin: 2rem 0 1.5rem;
-  color: rgba(200,220,240,.65);
-  font-size: .85rem;
-}
-.divider::before,
-.divider::after {
-  content: "";
-  flex: 1 1 auto;
-  height: 1px;
-  background: rgba(255,255,255,.08);
-}
-
-/* ───── Contenedor de botones OAuth ───── */
-.oauth-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-/* Botón base */
-.oauth-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.55rem;
-  padding: 0.55rem 1rem;
-  border-radius: 999px;
-  font-weight: 600;
-  font-size: .95rem;
-  cursor: pointer;
-  transition: transform .2s, box-shadow .2s;
-  border: none;
-}
-
-.oauth-btn .icon {
-  width: 20px;
-  height: 20px;
-  background-size: contain;
-  background-repeat: no-repeat;
-}
-
-/* Google */
-.oauth-btn.google {
-  background: #fff;
-  color: #0d1117;
-}
-.oauth-btn.google .icon {
-  background-image: url("https://unpkg.com/simple-icons@11/icons/google.svg");
-}
-
-/* Facebook */
-.oauth-btn.facebook {
-  background: #1877f2;
-  color: #fff;
-}
-.oauth-btn.facebook .icon {
-  background-image: url("https://unpkg.com/simple-icons@11/icons/facebook.svg");
-}
-
-/* GitHub */
-.oauth-btn.github {
-  background: #161b22;
-  color: #fff;
-}
-.oauth-btn.github .icon {
-  background-image: url("https://unpkg.com/simple-icons@11/icons/github.svg");
-}
-
-/* Hover elevación */
-.oauth-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 18px rgba(0,0,0,.3);
-}
-
 
 
 /* ─── Ajuste del botón “Iniciar sesión” dentro del Navbar ─── */
@@ -2529,3 +2220,310 @@ body{ cursor:none; }
 /* 5 ▸ Mientras el menú está abierto no queremos interactuar con el buscador */
 body.menu-open .searchbar-container{ pointer-events:none; }
 body.menu-open .search-dropdown{ display:none !important; }
+
+
+
+
+
+/* ========== VIKING DARK FANTASY LOGIN: RUNAS + POLVO + BRUMA ========== */
+
+/* Fondo vikingazo: piedras y bruma */
+.login-page, .register-page {
+  min-height: 100vh;
+  min-width: 100vw;
+  position: relative;
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(120deg, #212226 0px, #292830 220px, #22232c 340px, #232028 400px),
+    radial-gradient(ellipse at 60% 25%, rgba(255,255,255,0.07) 0 30%, transparent 80%),
+    linear-gradient(180deg, #18161b 0%, #2a232b 98%);
+  /* Bruma baja y arriba */
+  box-shadow:
+    0 12vw 90vw 0vw #fff2,
+    0 -14vw 92vw 0vw #d5d0e011;
+  filter: brightness(0.96) saturate(0.88);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ───────── Runas flotantes en capas ───────── */
+.login-page::before, .register-page::before {
+  content: 'ᚠ ᚱ ᛉ ᚺ ᚨ ᚷ ᛟ ᛞ ᛗ ᛁ ᛚ ᛋ ᛏ ᚦ';
+  font-family: 'Noto Sans Runic', 'Segoe UI Symbol', serif;
+  position: absolute;
+  top: 8vh;
+  left: 1vw;
+  right: 0;
+  font-size: 10vw;
+  letter-spacing: 2vw;
+  color: #d6c8ff;
+  opacity: 0.13;
+  filter: blur(2.2px) drop-shadow(0 0 18px #f4ecffbb);
+  pointer-events: none;
+  z-index: 2;
+  white-space: nowrap;
+  animation: vikingRunes1 11s linear infinite alternate;
+}
+@keyframes vikingRunes1 {
+  from { transform: translateY(0) scale(1.02) rotate(-2deg);}
+  to   { transform: translateY(44px) scale(1.06) rotate(5deg);}
+}
+.login-page::after, .register-page::after {
+  content: 'ᛞᛗᚦ ᚺᚱᛉ ᚷᚠᚨ ᛟᚺᚲ ᚷᚠᚨ';
+  font-family: 'Noto Sans Runic', 'Segoe UI Symbol', serif;
+  position: absolute;
+  bottom: 6vh;
+  right: 4vw;
+  left: 0;
+  font-size: 7vw;
+  letter-spacing: 2vw;
+  color: #de2134;
+  opacity: 0.13;
+  filter: blur(1.8px) drop-shadow(0 0 17px #79167f88);
+  pointer-events: none;
+  z-index: 2;
+  white-space: nowrap;
+  animation: vikingRunes2 21s linear infinite alternate-reverse;
+}
+@keyframes vikingRunes2 {
+  from { transform: translateY(0) scale(1) rotate(2deg);}
+  to   { transform: translateY(-33px) scale(1.04) rotate(-4deg);}
+}
+@media (max-width: 900px) {
+  .login-page::before, .register-page::before {
+    font-size: 20vw;
+    letter-spacing: 5vw;
+    top: 2vh;
+  }
+  .login-page::after, .register-page::after {
+    font-size: 12vw;
+    bottom: 2vh;
+  }
+}
+
+/* ========== FORMULARIO: TARJETA Y CAMPOS ========== */
+
+.login-card, .register-card {
+  width: 100%;
+  max-width: 360px;
+  background: rgba(26,19,28,0.96);
+  border-radius: 19px;
+  box-shadow:
+    0 8px 32px #0008,
+    0 0 0 2.5px #741a2a77,
+    0 0 20px 5px #b452ff12;
+  padding: 2.2rem 1.2rem 2.5rem 1.2rem;
+  border: 2px solid #2b243444;
+  margin: 2rem 1rem 2.5rem 1rem;
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 0.82rem;
+  backdrop-filter: blur(2.5px);
+  /* Simula reflejo piedra */
+  overflow: visible;
+}
+.login-card h1, .register-card h1 {
+  font-size: 1.45rem;
+  color: #ede7ff;
+  text-align: center;
+  letter-spacing: 0.07em;
+  margin-bottom: 1.5rem;
+  font-family: 'Cinzel', serif, system-ui;
+  font-weight: 900;
+  filter: drop-shadow(0 2px 10px #68185c88);
+  text-shadow: 0 2px 18px #c969fa22;
+  background: linear-gradient(90deg, #fff 40%, #b4a7f3 95%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Etiquetas e inputs */
+.login-form label, .register-form label {
+  display: block;
+  margin-bottom: 1.05rem;
+  font-weight: 600;
+  color: #f3a9ba;
+  font-size: 1.02rem;
+  letter-spacing: 0.01em;
+}
+.login-form input, .register-form input {
+  width: 100%;
+  padding: 0.66rem 0.88rem;
+  border: 1.7px solid #36223688;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #18111c 70%, #2d2331 100%);
+  color: #f7eafd;
+  font-size: 1.05rem;
+  font-family: inherit;
+  font-weight: 600;
+  transition: border-color 0.13s, background 0.15s, box-shadow 0.18s;
+  box-shadow: 0 1px 8px #44135a22;
+}
+.login-form input:focus, .register-form input:focus {
+  border-color: #c96bfa;
+  background: #1f1923;
+  box-shadow: 0 0 0 2px #c96bfa77, 0 1px 12px #ad4bf344;
+  outline: none;
+}
+
+/* Botón principal */
+.btn-login {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.82rem 0;
+  font-weight: 900;
+  font-size: 1.14rem;
+  letter-spacing: 0.02em;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(90deg,#8e233d 0%,#4a2969 80%);
+  color: #f7f4fa;
+  box-shadow: 0 4px 22px #4a296955, 0 0px 0px #13091622;
+  cursor: pointer;
+  text-shadow: 0 1px 5px #0008, 0 0.5px 2px #fff2;
+  transition: background 0.19s, transform 0.17s, box-shadow 0.22s, filter 0.12s;
+  filter: brightness(0.98);
+}
+.btn-login:hover, .btn-login:focus {
+  background: linear-gradient(90deg,#4a2969 10%,#c96bfa 94%);
+  filter: brightness(1.08) contrast(1.11);
+  box-shadow: 0 8px 32px #c96bfa99, 0 1px 9px #2e184940;
+  transform: translateY(-2px) scale(1.025);
+}
+
+/* Error mensaje */
+.form-error {
+  color: #ff7b7b;
+  background: #311a21;
+  padding: 0.6em 0.5em;
+  border-radius: 7px;
+  font-size: 0.97rem;
+  margin-top: -1rem;
+  margin-bottom: 0.85rem;
+  text-align: center;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  box-shadow: 0 1.5px 7px #d2212a15;
+}
+
+/* Divider */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: #c3b9d1;
+  font-size: .94rem;
+  margin: 1.5rem 0 1.2rem;
+  font-family: 'Cinzel', serif;
+  letter-spacing: 0.02em;
+}
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1 1 auto;
+  height: 1.3px;
+  background: linear-gradient(90deg,#4a2969 70%,#2b243444 100%);
+  border-radius: 2px;
+  filter: blur(0.5px);
+}
+
+/* Botones OAuth */
+.oauth-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.68rem;
+  margin-bottom: 0.7rem;
+}
+.oauth-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.61rem;
+  padding: 0.57rem 0.7rem;
+  border-radius: 7px;
+  border: none;
+  font-weight: 700;
+  font-size: .99rem;
+  cursor: pointer;
+  background: #262337;
+  color: #e2d5f8;
+  transition: background 0.14s, color 0.13s, box-shadow 0.13s;
+  box-shadow: 0 1.5px 10px #c96bfa14;
+}
+.oauth-btn .icon {
+  width: 21px; height: 21px;
+  background-size: cover;
+  filter: drop-shadow(0 0 5px #c96bfa44);
+}
+.oauth-btn.google { background: #ece9f9; color: #34104a;}
+.oauth-btn.google .icon { background-image: url("https://unpkg.com/simple-icons@11/icons/google.svg");}
+.oauth-btn.facebook { background: #4a2969; color: #fff;}
+.oauth-btn.facebook .icon { background-image: url("https://unpkg.com/simple-icons@11/icons/facebook.svg");}
+.oauth-btn.github { background: #18141e; color: #c9b6f4;}
+.oauth-btn.github .icon { background-image: url("https://unpkg.com/simple-icons@11/icons/github.svg");}
+.oauth-btn:hover { background: #63367a; color: #fff; box-shadow: 0 4px 18px #c96bfa55; }
+
+/* Extra links (registro/login) */
+.login-extra {
+  margin-top: 1.1rem;
+  text-align: center;
+  font-size: .96rem;
+  color: #d5a3f7;
+  text-shadow: 0 1px 9px #a456f922;
+  letter-spacing: .01em;
+}
+.login-extra .link {
+  color: #c96bfa;
+  font-weight: 700;
+  text-decoration: underline;
+  transition: color 0.14s;
+  text-underline-offset: 2.5px;
+}
+.login-extra .link:hover { color: #fa6cc2; }
+
+/* Responsive: máximo rendimiento móvil */
+@media (max-width: 600px) {
+  .login-card, .register-card {
+    max-width: 97vw;
+    padding: 1.3rem 0.4rem 2rem 0.4rem;
+    margin: 0.8rem;
+    border-radius: 12px;
+    min-width: 0;
+  }
+  .login-card h1, .register-card h1 {
+    font-size: 1.11rem;
+    padding: 0.18rem 0;
+  }
+  .btn-login { font-size: 1rem; padding: 0.63rem 0; }
+}
+
+@media (max-width: 600px) {
+  .login-card, .register-card {
+    max-width: 93vw;
+    min-width: 0;
+    padding: 0.7rem 0.35rem 1.4rem 0.35rem; /* mucho más compacto */
+    margin: 0.6rem;
+    border-radius: 10px;
+    background: rgba(26,19,28, 0.75); /* más transparente */
+    box-shadow: 0 4px 18px #0006, 0 0px 0px #13091622;
+    backdrop-filter: blur(1.2px); /* menos blur para dejar ver el fondo */
+  }
+  .login-card h1, .register-card h1 {
+    font-size: 1.03rem;
+    padding: 0.1rem 0;
+    margin-bottom: 0.85rem;
+  }
+  .login-form input, .register-form input {
+    font-size: 0.95rem;
+    padding: 0.52rem 0.72rem;
+  }
+  .btn-login { font-size: 0.98rem; padding: 0.49rem 0; }
+  .divider { font-size: .85rem; margin: 1.1rem 0 0.8rem; }
+  .login-extra { font-size: .89rem; }
+}
+
+
+
