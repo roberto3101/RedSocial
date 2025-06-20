@@ -1,4 +1,4 @@
-// backend/server.js
+// server.js (o index.js)
 import express from "express";
 import cors from "cors";
 import multer from "multer";
@@ -21,22 +21,25 @@ import chatsRouter       from "./routes/chats.js";
 import "./passport.js";
 
 // ─────────── Setup Express y HTTP server ───────────
-const app  = express();
+const app    = express();
 const server = http.createServer(app);
-const PORT = process.env.PORT || 3001;
+const PORT   = process.env.PORT || 3001;
 
 // ─────────── CORS seguro ───────────
 const allowedOrigins = [
-  process.env.FRONT_URL,                 // producción
-  "http://localhost:5173",               // desarrollo vite
-  "http://localhost:3000",               // otro puerto común
+  process.env.FRONT_URL?.replace(/\/$/, ""),
+  "https://roberto3101.github.io",
+  "https://roberto3101.github.io/RedSocial",
+  "http://localhost:5173",
+  "http://localhost:3000"
 ];
 
 app.use(cors({
   origin: function(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin || allowedOrigins.includes(origin.replace(/\/$/, ""))) {
       callback(null, true);
     } else {
+      console.log("CORS bloqueado:", origin);
       callback(new Error("No permitido por CORS"));
     }
   },
@@ -83,7 +86,7 @@ app.post("/api/upload-image", upload.single("image"), (req, res) => {
   if (!req.file) return res.status(400).json({ error: "No se subió imagen" });
   let baseUrl;
   if (process.env.NODE_ENV === "production") {
-    baseUrl = "https://d315m7tpvzh3ta.cloudfront.net"; // <--- TU URL DE CLOUD
+    baseUrl = "https://d315m7tpvzh3ta.cloudfront.net"; // URL de CloudFront
   } else {
     baseUrl = `${req.protocol}://${req.headers.host}`;
   }
@@ -105,14 +108,20 @@ const io = new SocketServer(server, {
 let onlineUsers = {};
 
 io.on("connection", (socket) => {
-  // Recibe el username al conectar
   socket.on("register", (username) => {
     onlineUsers[username] = socket.id;
     socket.username = username;
+    console.log("Usuario registrado en WebSocket:", username);
   });
 
-  // Reenvía mensaje privado en tiempo real
   socket.on("private-message", ({ to, message }) => {
+    console.log("Mensaje recibido por socket:", {
+      from: socket.username,
+      to,
+      message
+    });
+
+    // Envía al receptor si está online
     const targetSocketId = onlineUsers[to];
     if (targetSocketId) {
       io.to(targetSocketId).emit("private-message", {
@@ -120,12 +129,19 @@ io.on("connection", (socket) => {
         message
       });
     }
+    // Eco instantáneo para el emisor (así no recargas)
+    if (socket.username) {
+      socket.emit("private-message", {
+        from: socket.username,
+        message
+      });
+    }
   });
 
-  // Limpia al desconectar
   socket.on("disconnect", () => {
     if (socket.username) {
       delete onlineUsers[socket.username];
+      console.log("Usuario desconectado:", socket.username);
     }
   });
 });
@@ -134,3 +150,4 @@ io.on("connection", (socket) => {
 server.listen(PORT, () =>
   console.log(`✅ API y WebSocket corriendo en http://localhost:${PORT}`)
 );
+

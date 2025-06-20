@@ -1,5 +1,4 @@
 [
- 
   {
     "userId": "feecac1a-0878-4092-810b-66a27e042ef0",
     "username": "transitorio",
@@ -60,5 +59,19 @@
     "whatsapp": "+51938192665",
     "github": "roberto3101",
     "linkedin": "nohay"
+  },
+  {
+    "userId": "fda22a59-1dbe-4366-a057-50daac5a3a24",
+    "username": "roberto3101",
+    "firstName": "José",
+    "lastName": "Ledezma",
+    "phone": "938192665",
+    "email": "jose0686534@gmail.com",
+    "website": "https://roberto3101.github.io/RedSocial/",
+    "languages": "español, ingles, ruso, aleman",
+    "interests": "frontend, backend, tumama",
+    "about": "qefqef",
+    "avatar": "http://localhost:3001/uploads/1750436957699-Captura de pantalla (4).png",
+    "cv": ""
   }
 ]
