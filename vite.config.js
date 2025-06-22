@@ -1,26 +1,16 @@
-// vite.config.js
 import { defineConfig, loadEnv } from 'vite'
-import react from '@vitejs/plugin-react-swc'
+import react from '@vitejs/plugin-react'
+
 
 export default defineConfig(({ mode }) => {
-  // Carga .env, por si necesitas usar variables dentro de la config
-  loadEnv(mode, process.cwd())
+  // Cargar todas las variables (sin prefijo) para usarlas en define
+  const env = loadEnv(mode, process.cwd(), '')
 
   return {
-    // 👉 Ruta base obligatoria para GitHub Pages
     base: '/RedSocial/',
     plugins: [react()],
-
-    /* ───────────── Dev Server ───────────── */
     server: {
       fs: { strict: false },
-
-      /*
-       * Durante `npm run dev` todo lo que empiece por
-       *   /api, /auth, /uploads, /projects, /chats, /oauth
-       * se redirige al backend local que corre en http://localhost:8080
-       * (evita CORS mientras desarrollas).
-       */
       proxy: {
         '^/(api|auth|uploads|projects|chats|oauth)': {
           target: 'http://localhost:8080',
@@ -28,8 +18,6 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
-
-    /* ───────────── Build ───────────── */
     build: {
       rollupOptions: {
         input: {
@@ -38,8 +26,11 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
-
-    // Solo expondrá a import.meta.env.* variables que empiecen por VITE_
     envPrefix: 'VITE_',
+    // 🔥 REEMPLAZA todas las referencias a estas vars en el JS final por el valor real
+    define: {
+      'import.meta.env.VITE_API_URL': JSON.stringify(env.VITE_API_URL),
+      'import.meta.env.VITE_WS_URL': JSON.stringify(env.VITE_WS_URL),
+    },
   }
 })

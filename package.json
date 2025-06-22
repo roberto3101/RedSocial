@@ -6,7 +6,8 @@
   "homepage": "https://roberto3101.github.io/RedSocial/",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "npx cross-env NODE_ENV=production vite build",
+    "build:prod": "npx cross-env NODE_ENV=production vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "netlify": "netlify dev",
@@ -48,7 +49,7 @@
     "@eslint/js": "^9.25.0",
     "@types/react": "^18.2.7",
     "@types/react-dom": "^18.2.5",
-    "@vitejs/plugin-react-swc": "^3.9.0",
+    "@vitejs/plugin-react": "^4.5.2",
     "cross-env": "^7.0.3",
     "eslint": "^9.25.0",
     "eslint-plugin-react-hooks": "^5.2.0",
