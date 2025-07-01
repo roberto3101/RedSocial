@@ -2526,3 +2526,442 @@ body.menu-open .search-dropdown{ display:none !important; }
 }
 
 
+
+/* ===== TOGGLE PASSWORD EYE (OJITO) ===== */
+.password-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-field input {
+  width: 100%;
+  padding-right: 45px; /* Espacio para el botón */
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  color: #c3b9d1;
+  transition: color 0.2s, background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.password-toggle:hover {
+  color: #c96bfa;
+  background-color: rgba(201, 107, 250, 0.1);
+}
+
+.password-toggle:focus {
+  outline: 2px solid #c96bfa;
+  outline-offset: 2px;
+}
+
+.password-toggle svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
+}
+
+/* Responsive para móviles */
+@media (max-width: 600px) {
+  .password-toggle {
+    right: 10px;
+  }
+  
+  .password-toggle svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .password-field input {
+    padding-right: 40px;
+  }
+}
+
+/* ===== TOGGLE PASSWORD EYE (OJITO) ===== */
+.password-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-field input {
+  width: 100%;
+  padding-right: 45px; /* Espacio para el botón */
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  color: #c3b9d1;
+  transition: color 0.2s, background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.password-toggle:hover {
+  color: #c96bfa;
+  background-color: rgba(201, 107, 250, 0.1);
+}
+
+.password-toggle:focus {
+  outline: 2px solid #c96bfa;
+  outline-offset: 2px;
+}
+
+.password-toggle svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
+}
+
+/* Responsive para móviles */
+@media (max-width: 600px) {
+  .password-toggle {
+    right: 10px;
+  }
+  
+  .password-toggle svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .password-field input {
+    padding-right: 40px;
+  }
+}
+
+
+/* ===== MYSTICAL CREATURE EYE TOGGLE (OJITO PRO) ===== */
+.password-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-field input {
+  width: 100%;
+  padding-right: 50px; /* Más espacio para el ojo místico */
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Aura mística base */
+  background: radial-gradient(circle at center, 
+    rgba(201, 107, 250, 0.05) 0%, 
+    rgba(138, 43, 226, 0.08) 50%, 
+    transparent 70%);
+  box-shadow: 
+    0 0 8px rgba(201, 107, 250, 0.3),
+    0 0 16px rgba(138, 43, 226, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.password-toggle:hover {
+  background: radial-gradient(circle at center, 
+    rgba(201, 107, 250, 0.15) 0%, 
+    rgba(138, 43, 226, 0.25) 50%, 
+    rgba(75, 0, 130, 0.1) 70%);
+  box-shadow: 
+    0 0 15px rgba(201, 107, 250, 0.6),
+    0 0 25px rgba(138, 43, 226, 0.4),
+    0 0 35px rgba(75, 0, 130, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transform: translateY(-50%) scale(1.05);
+}
+
+.password-toggle:focus {
+  outline: none;
+  box-shadow: 
+    0 0 0 2px rgba(201, 107, 250, 0.5),
+    0 0 20px rgba(201, 107, 250, 0.8),
+    0 0 30px rgba(138, 43, 226, 0.6);
+}
+
+/* Ojo místico - base */
+.password-toggle::before {
+  content: '';
+  position: absolute;
+  width: 24px;
+  height: 16px;
+  background: linear-gradient(145deg, 
+    #2a1540 0%, 
+    #4a2969 30%, 
+    #6b4295  60%, 
+    #8a5bc7 100%);
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.3),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+/* Pupila del ojo */
+.password-toggle::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: radial-gradient(circle at 30% 30%, 
+    #ff6b9d 0%, 
+    #c96bfa 40%, 
+    #8a2be2 70%, 
+    #2d1b4e 100%);
+  border-radius: 50%;
+  box-shadow: 
+    0 0 6px rgba(201, 107, 250, 0.8),
+    0 0 12px rgba(255, 107, 157, 0.4),
+    inset 1px 1px 2px rgba(255, 255, 255, 0.3);
+  animation: mysticalPulse 2s ease-in-out infinite;
+  transition: all 0.3s ease;
+}
+
+/* Animación de pulso místico */
+@keyframes mysticalPulse {
+  0%, 100% { 
+    box-shadow: 
+      0 0 6px rgba(201, 107, 250, 0.8),
+      0 0 12px rgba(255, 107, 157, 0.4),
+      inset 1px 1px 2px rgba(255, 255, 255, 0.3);
+  }
+  50% { 
+    box-shadow: 
+      0 0 12px rgba(201, 107, 250, 1),
+      0 0 20px rgba(255, 107, 157, 0.7),
+      0 0 30px rgba(138, 43, 226, 0.3),
+      inset 1px 1px 2px rgba(255, 255, 255, 0.5);
+  }
+}
+
+/* Estado cuando la contraseña está visible (ojo abierto) */
+.password-toggle[aria-pressed="true"]::before,
+.password-toggle:hover::before {
+  background: linear-gradient(145deg, 
+    #4a2969 0%, 
+    #6b4295 30%, 
+    #8a5bc7 60%, 
+    #b47de8 100%);
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.2),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.2),
+    0 0 8px rgba(201, 107, 250, 0.4);
+}
+
+.password-toggle[aria-pressed="true"]::after,
+.password-toggle:hover::after {
+  background: radial-gradient(circle at 30% 30%, 
+    #ff9ec7 0%, 
+    #e68bfa 40%, 
+    #c96bfa 70%, 
+    #8a2be2 100%);
+  box-shadow: 
+    0 0 10px rgba(201, 107, 250, 1),
+    0 0 20px rgba(255, 107, 157, 0.8),
+    0 0 30px rgba(138, 43, 226, 0.4),
+    inset 1px 1px 3px rgba(255, 255, 255, 0.4);
+}
+
+/* Estado cuando la contraseña está oculta (ojo cerrado/dormido) */
+.password-toggle:not([aria-pressed="true"])::before {
+  height: 12px;
+  border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+}
+
+.password-toggle:not([aria-pressed="true"])::after {
+  width: 6px;
+  height: 6px;
+  opacity: 0.7;
+  animation: mysticalSleep 3s ease-in-out infinite;
+}
+
+@keyframes mysticalSleep {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(0.8); }
+}
+
+/* Efecto de partículas místicas en hover */
+.password-toggle:hover {
+  animation: mysticalAura 0.6s ease-out;
+}
+
+@keyframes mysticalAura {
+  0% { 
+    box-shadow: 
+      0 0 15px rgba(201, 107, 250, 0.6),
+      0 0 25px rgba(138, 43, 226, 0.4);
+  }
+  50% { 
+    box-shadow: 
+      0 0 25px rgba(201, 107, 250, 0.8),
+      0 0 40px rgba(138, 43, 226, 0.6),
+      0 0 60px rgba(75, 0, 130, 0.3),
+      0 0 80px rgba(255, 107, 157, 0.2);
+  }
+  100% { 
+    box-shadow: 
+      0 0 15px rgba(201, 107, 250, 0.6),
+      0 0 25px rgba(138, 43, 226, 0.4);
+  }
+}
+
+/* Responsive para móviles */
+@media (max-width: 600px) {
+  .password-toggle {
+    right: 8px;
+    width: 28px;
+    height: 28px;
+  }
+  
+  .password-toggle::before {
+    width: 20px;
+    height: 14px;
+  }
+  
+  .password-toggle::after {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .password-field input {
+    padding-right: 42px;
+  }
+}
+
+/* Oculta los SVG originales ya que usamos pseudo-elementos */
+.password-toggle svg {
+  display: none;
+}
+
+/* ===== ESTILOS ESPECÍFICOS PARA FORGOT PASSWORD ===== */
+.forgot-description {
+  text-align: center;
+  color: #d5a3f7;
+  margin-bottom: 1.5rem;
+  line-height: 1.4;
+  font-size: 0.95rem;
+}
+
+.forgot-description strong {
+  color: #c96bfa;
+  font-weight: 700;
+}
+
+.code-input {
+  text-align: center !important;
+  font-size: 1.2rem !important;
+  letter-spacing: 0.5rem !important;
+  font-weight: 700 !important;
+  padding: 0.8rem 1rem !important;
+}
+
+.resend-section {
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.resend-btn {
+  background: none;
+  border: none;
+  color: #c96bfa;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: color 0.2s;
+  text-underline-offset: 2px;
+}
+
+.resend-btn:hover {
+  color: #fa6cc2;
+}
+
+.resend-btn:disabled {
+  color: #888;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
+.resend-text {
+  color: #c3b9d1;
+  font-size: 0.9rem;
+  margin: 0;
+  font-weight: 500;
+}
+
+.forgot-link {
+  font-size: 0.92rem !important;
+  margin-top: 0.5rem;
+  display: inline-block;
+}
+
+/* Success message styling para Login.jsx */
+.success-message {
+  background: linear-gradient(90deg, #1a3f2a 0%, #2d5a3d 100%);
+  color: #90ee90;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-weight: 600;
+  border: 1px solid #4a7c3a;
+  box-shadow: 0 2px 8px rgba(26, 63, 42, 0.3);
+}
+
+/* Responsive ajustes */
+@media (max-width: 600px) {
+  .forgot-description {
+    font-size: 0.88rem;
+    padding: 0 0.5rem;
+  }
+  
+  .code-input {
+    font-size: 1.1rem !important;
+    letter-spacing: 0.3rem !important;
+  }
+  
+  .resend-btn {
+    font-size: 0.9rem;
+  }
+  
+  .success-message {
+    font-size: 0.9rem;
+    padding: 0.7rem 0.8rem;
+  }
+}
