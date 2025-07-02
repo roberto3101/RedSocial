@@ -1,0 +1,52 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Node modules
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+build/
+
+# Local env files (muy importante)
+.env
+.env.*
+!.env.example
+
+# Editor directories and files
+.vscode/
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# System files
+Thumbs.db
+
+# Mac system files
+*.DS_Store
+
+# Windows system files
+ehthumbs.db
+Desktop.ini
+
+# Optional: coverage reports
+coverage/
+*.lcov
+
+# Optional: misc
+*.local
+
+# Optional: vite cache
+.vite/

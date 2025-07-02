@@ -1,0 +1,300 @@
+/* Hero Viking/Gaming Pro CSS - SIN CONFLICTOS */
+
+.hero-section {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background: #0d1117;
+  color: #e6edf3;
+}
+
+/* ═══════════ FONDO MÍSTICO ═══════════ */
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Runas flotantes */
+.rune-layer {
+  position: absolute;
+  inset: 0;
+  font-family: 'Noto Sans Runic', serif;
+  font-size: 4rem;
+  color: #14e956;
+  opacity: 0.1;
+}
+
+.floating-rune {
+  position: absolute;
+  animation: floatRune 20s ease-in-out infinite;
+  transition: all 0.3s ease;
+}
+
+.floating-rune.glow {
+  color: #58a6ff;
+  opacity: 0.3;
+  text-shadow: 0 0 30px currentColor;
+}
+
+@keyframes floatRune {
+  0%, 100% { 
+    transform: translateY(0) rotate(0deg);
+  }
+  25% { 
+    transform: translateY(-30px) rotate(90deg);
+  }
+  50% { 
+    transform: translateY(0) rotate(180deg);
+  }
+  75% { 
+    transform: translateY(30px) rotate(270deg);
+  }
+}
+
+/* Orbes místicos */
+.mystic-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  transition: transform 0.3s ease-out;
+}
+
+.orb-1 {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, #14e956 0%, transparent 70%);
+  top: -300px;
+  left: -300px;
+  opacity: 0.3;
+}
+
+.orb-2 {
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle, #58a6ff 0%, transparent 70%);
+  bottom: -400px;
+  right: -400px;
+  opacity: 0.2;
+}
+
+/* Partículas de energía */
+.energy-particles {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    radial-gradient(2px 2px at 20% 30%, #14e956 0%, transparent 100%),
+    radial-gradient(2px 2px at 60% 70%, #58a6ff 0%, transparent 100%),
+    radial-gradient(1px 1px at 90% 10%, white 0%, transparent 100%);
+  background-size: 200px 200px;
+  animation: particleFloat 60s linear infinite;
+}
+
+@keyframes particleFloat {
+  from { transform: translate(0, 0); }
+  to { transform: translate(-100px, -100px); }
+}
+
+/* Grid místico */
+.mystic-grid {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(20, 233, 86, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(20, 233, 86, 0.03) 1px, transparent 1px);
+  background-size: 100px 100px;
+  mask-image: radial-gradient(ellipse at center, black 0%, transparent 70%);
+}
+
+/* ═══════════ NAVEGACIÓN ÉPICA - HERO ═══════════ */
+.hero-nav {
+  position: relative;
+  z-index: 10;
+  padding: 1.5rem 0;
+  background: linear-gradient(180deg, #161b22 0%, transparent 100%);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(20, 233, 86, 0.1);
+}
+
+.hero-nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Logo épico */
+.hero-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 800;
+  font-family: 'Cinzel', serif;
+}
+
+.hero-logo-rune {
+  font-size: 2rem;
+  color: #14e956;
+  animation: weaponPulse 2s ease-in-out infinite;
+}
+
+@keyframes weaponPulse {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.1) rotate(-5deg); }
+}
+
+.hero-logo-text {
+  background: linear-gradient(135deg, #e6edf3 0%, #58a6ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-logo-glow {
+  color: #14e956;
+  text-shadow: 0 0 20px currentColor;
+}
+
+/* Enlaces de navegación - HERO */
+.hero-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.hero-nav-link {
+  color: rgba(230, 237, 243, 0.7);
+  text-decoration: none;
+  transition: all 0.3s;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.hero-link-rune {
+  color: #14e956;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: all 0.3s;
+}
+
+.hero-nav-link:hover {
+  color: #14e956;
+  text-shadow: 0 0 10px currentColor;
+}
+
+.hero-nav-link:hover .hero-link-rune {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.hero-nav-link-login {
+  color: #58a6ff;
+}
+
+/* CTA épico - HERO */
+.hero-nav-cta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #14e956 0%, #0d7e3c 100%);
+  color: #0d1117;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 700;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.hero-cta-aura {
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(135deg, #14e956, #58a6ff);
+  border-radius: 8px;
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 0.3s;
+  filter: blur(10px);
+}
+
+.hero-nav-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(20, 233, 86, 0.3);
+}
+
+.hero-nav-cta:hover .hero-cta-aura {
+  opacity: 0.5;
+}
+
+/* ═══════════ HAMBURGUESA Y MENÚ MÓVIL - HERO ═══════════ */
+.hero-hamburger {
+  display: none;
+  width: 30px;
+  height: 25px;
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 100;
+}
+
+.hero-hamburger span {
+  display: block;
+  position: absolute;
+  height: 3px;
+  width: 100%;
+  background: #14e956;
+  border-radius: 3px;
+  opacity: 1;
+  left: 0;
+  transform: rotate(0deg);
+  transition: all 0.25s ease-in-out;
+}
+
+.hero-hamburger span:nth-child(1) {
+  top: 0px;
+}
+
+.hero-hamburger span:nth-child(2) {
+  top: 10px;
+}
+
+.hero-hamburger span:nth-child(3) {
+  top: 20px;
+}
+
+.hero-hamburger.hero-open span:nth-child(1) {
+  top: 10px;
+  transform: rotate(135deg);
+}
+
+.hero-hamburger.hero-open span:nth-child(2) {
+  opacity: 0;
+  left: -60px;
+}
+
+.hero-hamburger.hero-open span:nth-child(3) {
+  top: 10px;
+  transform: rotate(-135deg);
+}
+
+/* Overlay para cerrar menú - HERO */
+.hero-menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.2);
+  z-index: 50;
+  opacity: 0;
+  animation: fadeIn 0.3s forwards;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}

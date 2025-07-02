@@ -1,0 +1,16 @@
+[
+  {
+    "id": "2654e66d-d739-4979-935d-2d056f5f02b2",
+    "email": "esthelajlc79@gmail.com",
+    "hash": "$2a$10$W67tuRYIMMZy/ZLuQLcBuezy3.YmLW0gELIueK0G0lnrsJGKog3dq",
+    "verified": false,
+    "code": "715189"
+  },
+  {
+    "id": "17e09367-ed92-4f1e-b710-e2740fd9fe83",
+    "email": "jose0686534@gmail.com",
+    "hash": "$2a$10$TKjyZrr6KkU/cnSxFG4BeOAPKV1AXkZ7hYzU/IWAu.Ux4VV0XHomS",
+    "verified": true,
+    "code": "746695"
+  }
+]
