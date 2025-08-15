@@ -21,3 +21,7 @@ node_modules/
 dist/
 build/
 # No empaquetar datos locales
+
+# Al final de tu .gitignore agregar:
+.history/
+.history/*
