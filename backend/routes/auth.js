@@ -36,7 +36,11 @@ router.post("/register", async (req, res) => {
         .json({ msg: "Ese correo ya está vinculado a Google/Facebook/GitHub" });
     }
 
+  
+  
+  
     // 🚩 Si existe, no está verificado, reenvía código (permite reenviar desde frontend)
+    /*
     if (existing && !existing.verified) {
       const code = Math.floor(100000 + Math.random() * 900000).toString();
       existing.code = code;
@@ -47,7 +51,7 @@ router.post("/register", async (req, res) => {
         resend: true,
       });
     }
-
+*/
     if (existing) {
       return res.status(409).json({ msg: "Email ya registrado" });
     }
@@ -56,13 +60,11 @@ router.post("/register", async (req, res) => {
     if (!password)
       return res.status(400).json({ msg: "Falta la contraseña" });
 
-    const hash = await bcrypt.hash(password, 10);
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
+  const hash = await bcrypt.hash(password, 10);
 
-    await upsert({ id: uuid(), email, hash, verified: false, code });
-    await sendVerification(email, code);
+const user = await upsert({ id: uuid(), email, hash, verified: true });
 
-    return res.status(201).json({ msg: "Código enviado" });
+return res.status(201).json({ token: sign(user.id) });
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: "Algo salió mal" });
