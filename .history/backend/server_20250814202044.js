@@ -24,24 +24,11 @@ import dangerWipeRouter from "./routes/dangerWipe.js";
 
 import "./passport.js";
 
-// ─────────── Setup Express y servidor HTTPS/HTTP ───────────
-const app = express();
-const PORT = process.env.PORT || 3001;
+// ─────────── Setup Express y HTTP server ───────────
+const app    = express();
+const server = http.createServer(app);
+const PORT   = process.env.PORT || 3001;
 
-// Usar HTTPS si existen certificados, sino HTTP
-let server;
-try {
-  if (fs.existsSync('key.pem') && fs.existsSync('cert.pem')) {
-    server = https.createServer({
-      key: fs.readFileSync('key.pem'),
-      cert: fs.readFileSync('cert.pem')
-    }, app);
-  } else {
-    server = http.createServer(app);
-  }
-} catch (error) {
-  server = http.createServer(app);
-}
 // ─────────── CORS seguro ───────────
 const allowedOrigins = [
   process.env.FRONT_URL?.replace(/\/$/, ""),
@@ -178,6 +165,6 @@ io.on("connection", (socket) => {
 
 // ─────────── Arranque ───────────
 server.listen(PORT, () =>
-  console.log(`✅ API y WebSocket corriendo en https://localhost:${PORT} (modo ${process.env.NODE_ENV})`)
+  console.log(`✅ API y WebSocket corriendo en http://localhost:${PORT} (modo ${process.env.NODE_ENV})`)
 );
 

@@ -2,6 +2,13 @@ import { useState } from "react";
 import axios from "axios";
 import { useProfile } from "../context/ProfileContext";
 import { Link } from "react-router-dom";
+
+// ...
+
+<p className="login-prompt">
+  <Link to="/login">Inicia sesión</Link> para comentar
+</p>
+
 export default function CommentSection({ postSlug, initialComments = [] }) {
   const [comments, setComments] = useState(initialComments);
   const [newComment, setNewComment] = useState("");
@@ -89,13 +96,11 @@ export default function CommentSection({ postSlug, initialComments = [] }) {
           >
             {isSubmitting ? "Enviando..." : "Comentar"}
           </button>
-        </form>  
+        </form>
       ) : (
         <p className="login-prompt">
-         <a href="https://roberto3101.github.io/RedSocial/login">Inicia sesión</a> para comentar
-
+          <a href="/login">Inicia sesión</a> para comentar
         </p>
-
       )}
 
       <div className="comments-list">

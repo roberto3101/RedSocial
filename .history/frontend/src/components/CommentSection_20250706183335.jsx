@@ -89,13 +89,11 @@ export default function CommentSection({ postSlug, initialComments = [] }) {
           >
             {isSubmitting ? "Enviando..." : "Comentar"}
           </button>
-        </form>  
+        </form>
       ) : (
         <p className="login-prompt">
-         <a href="https://roberto3101.github.io/RedSocial/login">Inicia sesión</a> para comentar
-
-        </p>
-
+  <Link to="/login">Inicia sesión</Link> para comentar
+</p>
       )}
 
       <div className="comments-list">

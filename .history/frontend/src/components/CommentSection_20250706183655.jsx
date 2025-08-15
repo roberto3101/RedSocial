@@ -92,8 +92,7 @@ export default function CommentSection({ postSlug, initialComments = [] }) {
         </form>  
       ) : (
         <p className="login-prompt">
-         <a href="https://roberto3101.github.io/RedSocial/login">Inicia sesión</a> para comentar
-
+         The server is configured with a public base URL of /RedSocial/ - did you mean to visit /RedSocial/login instead?
         </p>
 
       )}

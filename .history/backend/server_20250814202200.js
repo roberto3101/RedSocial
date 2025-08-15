@@ -178,6 +178,6 @@ io.on("connection", (socket) => {
 
 // ─────────── Arranque ───────────
 server.listen(PORT, () =>
-  console.log(`✅ API y WebSocket corriendo en https://localhost:${PORT} (modo ${process.env.NODE_ENV})`)
+  console.log(`✅ API y WebSocket corriendo en http://localhost:${PORT} (modo ${process.env.NODE_ENV})`)
 );
 

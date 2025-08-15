@@ -33,7 +33,7 @@ const demoProjects = [
     name: "Web de ejercicios",
     brief: "Aplicación para gestionar rutinas y progreso de entrenamiento.",
     technologies: ["HTML", "CSS", "JavaScript"],
-    repo: "https://github.com/roberto3101/FirstProject"
+    repo: "1"
   },
   {
     id: "demo-4",
