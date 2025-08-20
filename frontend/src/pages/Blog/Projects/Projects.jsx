@@ -9,42 +9,6 @@ const BASE_PATH = window.location.pathname.startsWith("/RedSocial")
   ? "/RedSocial"
   : "";
 
-// PROYECTOS DEMO para landing o modo demo
-const demoProjects = [
-  {
-    id: "demo-1",
-    image: `${BASE_PATH}/imagenes/BiblioSystem.jpg`,
-    name: "BiblioSystem",
-    brief: "Sistema de gestión de bibliotecas con login, roles y CRUD para libros y alumnos.",
-    technologies: ["Java", "MySQL", "Tomcat"],
-    repo: "https://github.com/roberto3101/BiblioSystem"
-  },
-  {
-    id: "demo-2",
-    image: `${BASE_PATH}/imagenes/CRUD.jpg`,
-    name: "CRUD App",
-    brief: "CRUD sencillo con React y MySQL.",
-    technologies: ["React", "SqlServer", "Node.js"],
-    repo: "https://github.com/roberto3101/CrudReact"
-  },
-  {
-    id: "demo-3",
-    image: `${BASE_PATH}/imagenes/Thenx.png`,
-    name: "Web de ejercicios",
-    brief: "Aplicación para gestionar rutinas y progreso de entrenamiento.",
-    technologies: ["HTML", "CSS", "JavaScript"],
-    repo: "https://github.com/roberto3101/FirstProject"
-  },
-  {
-    id: "demo-4",
-    image: `${BASE_PATH}/imagenes/highrise.png`,
-    name: "Bots JS / Node",
-    brief: "Bots en Javascript + Node.js para automatizar emotes, teleports, roles y donaciones.",
-    technologies: ["JavaScript", "Node.js"],
-    repo: "https://github.com/roberto3101"
-  }
-];
-
 // Modal para agregar/editar proyectos
 function ProjectModal({ open, onClose, onSave, initial }) {
   const [form, setForm] = useState(
@@ -217,25 +181,18 @@ export default function Projects() {
   const { profile } = useProfile();
   const navigate = useNavigate();
 
-  // Determina usuario a mostrar
-  const usuario = username || profile?.username;
-
-  // Si estamos en modo demo (sin usuario ni username)
-  const isDemo = !usuario;
+  // Determina usuario a mostrar (si no hay usuario específico, muestra roberto3101)
+  const usuario = username || profile?.username || "roberto3101";
 
   useEffect(() => {
-    if (isDemo) {
-      setProjects(demoProjects);
-      return;
-    }
     axios
       .get(`${API_BASE}/api/projects/${usuario}`)
       .then((r) => setProjects(r.data))
       .catch(() => setProjects([]));
-  }, [usuario, isDemo]);
+  }, [usuario]);
 
   // Solo el dueño puede editar
-  const isOwner = profile && usuario && profile.username === usuario;
+  const isOwner = profile && profile.username === usuario;
 
   // Botón volver: redirige al perfil correspondiente
   const handleBack = () => {
@@ -250,51 +207,6 @@ export default function Projects() {
 
   // GUARDAR proyecto (add/edit)
   const handleSave = async (data) => {
-    // Si estamos en modo demo, no se guarda en backend, solo en el array local
-    if (isDemo) {
-      setProjects((prev) =>
-        editing
-          ? prev.map((p) => (p.id === editing.id ? { ...editing, ...data } : p))
-          : [...prev, { ...data, id: "demo-" + (prev.length + 1) }]
-      );
-      setModalOpen(false);
-      setEditing(null);
-      return;
-    }
-
-    // Cambios reales: actualizar también la demo si es el usuario demo
-    if (profile?.username === "roberto3101") {
-      // Guarda el proyecto real
-      let res;
-      if (editing) {
-        res = await axios.put(`${API_BASE}/api/projects/${editing.id}`, data, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("jwt")}` },
-        });
-        setProjects((ps) => ps.map((p) => (p.id === editing.id ? res.data : p)));
-      } else {
-        res = await axios.post(`${API_BASE}/api/projects`, data, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("jwt")}` },
-        });
-        setProjects((ps) => [...ps, res.data]);
-      }
-
-      // ACTUALIZA los proyectos demo (opcional, solo localmente)
-      setTimeout(() => {
-        setProjects((prev) => {
-          // Reemplaza demoProjects locales también para demo inmediata
-          return prev.map((p) =>
-            p.id?.toString().startsWith("demo-")
-              ? { ...p, ...data }
-              : p
-          );
-        });
-      }, 400);
-      setModalOpen(false);
-      setEditing(null);
-      return;
-    }
-
-    // Usuarios normales
     if (editing) {
       const res = await axios.put(`${API_BASE}/api/projects/${editing.id}`, data, {
         headers: { Authorization: `Bearer ${localStorage.getItem("jwt")}` },
@@ -313,24 +225,6 @@ export default function Projects() {
   // ELIMINAR proyecto
   const handleDelete = async (id) => {
     if (!window.confirm("¿Eliminar este proyecto?")) return;
-    // Modo demo: borra del array local
-    if (isDemo) {
-      setProjects((prev) => prev.filter((p) => p.id !== id));
-      return;
-    }
-    // Demo user: borra en backend real y en demo
-    if (profile?.username === "roberto3101") {
-      await axios.delete(`${API_BASE}/api/projects/${id}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("jwt")}` },
-      });
-      setProjects((ps) => ps.filter((p) => p.id !== id));
-      // Borra demo local
-      setTimeout(() => {
-        setProjects((prev) => prev.filter((p) => !p.id?.toString().startsWith("demo-")));
-      }, 400);
-      return;
-    }
-    // Usuarios normales
     await axios.delete(`${API_BASE}/api/projects/${id}`, {
       headers: { Authorization: `Bearer ${localStorage.getItem("jwt")}` },
     });
@@ -349,7 +243,7 @@ export default function Projects() {
         </button>
         <h2 className="projects-title">
           Proyectos{" "}
-          {usuario ? <span style={{ fontWeight: 400 }}>de {usuario}</span> : <span style={{ fontWeight: 400 }}>(DEMO)</span>}
+          <span style={{ fontWeight: 400 }}>de {usuario}</span>
         </h2>
         {isOwner && (
           <div
@@ -396,7 +290,7 @@ export default function Projects() {
                     />
                   </svg>
                 </a>
-                {isOwner && !isDemo && (
+                {isOwner && (
                   <div style={{ position: "absolute", top: 12, right: 12, zIndex: 2, display: "flex", gap: 4 }}>
                     <button
                       title="Editar"
