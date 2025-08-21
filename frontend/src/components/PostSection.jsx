@@ -32,7 +32,7 @@ export default function PostSection() {
             ? `Últimos artículos de ${paramUsername}`
             : profile?.username
               ? "Tus últimos artículos"
-              : "Últimos artículos de demostración"}
+              : "Últimos posts del desarrollador"}
         </h2>
         <div className="posts-grid">
           {latest.map((p) => (
