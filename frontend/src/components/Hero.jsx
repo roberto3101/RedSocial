@@ -50,6 +50,9 @@ export default function Hero({ profile: profileProp }) {
             <Link to={`/blog/user/${username}`} className="btn-cta">
               Leer el blog
             </Link>
+            <Link to="/portafolio" className="btn-outline">
+              🌐 Red Social
+            </Link>
             <a
               href={cvUrl}
               className="btn-outline"

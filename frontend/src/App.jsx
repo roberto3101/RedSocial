@@ -39,9 +39,10 @@ export default function App() {
             <Routes>
               {/* ----------- Rutas públicas ----------- */}
               {/* 🎯 LANDING como página principal */}
-              <Route index element={<LandingPage />} />
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/portafolio" element={<Home />} />
+            <Route index element={<Home />} />
+<Route path="/" element={<Home />} />
+<Route path="/portafolio" element={<LandingPage />} />
+
               
               {/* ----------- Proyectos global y por usuario ----------- */}
               <Route path="/projects" element={<Projects />} />

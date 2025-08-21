@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useProfile } from '../../../context/ProfileContext';
 import './Hero.css';
 
 export default function Hero() {
+  const { profile } = useProfile(); // ← AGREGAR
+
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [runeGlow, setRuneGlow] = useState(0);
@@ -48,8 +51,8 @@ export default function Hero() {
       <div className="hero-bg">
         <div className="rune-layer">
           {['ᚠ', 'ᚱ', 'ᛉ', 'ᚺ', 'ᚨ', 'ᚷ', 'ᛟ', 'ᛞ'].map((rune, i) => (
-            <span 
-              key={i} 
+            <span
+              key={i}
               className={`floating-rune ${runeGlow === i % 3 ? 'glow' : ''}`}
               style={{
                 left: `${10 + i * 12}%`,
@@ -61,23 +64,23 @@ export default function Hero() {
             </span>
           ))}
         </div>
-        
-        <div 
+
+        <div
           className="mystic-orb orb-1"
           style={{
             transform: `translate(${mousePosition.x}px, ${mousePosition.y}px)`
           }}
         />
-        <div 
+        <div
           className="mystic-orb orb-2"
           style={{
             transform: `translate(${-mousePosition.x * 0.5}px, ${-mousePosition.y * 0.5}px)`
           }}
         />
-        
+
         {/* Partículas de energía */}
         <div className="energy-particles"></div>
-        
+
         {/* Grid místico */}
         <div className="mystic-grid"></div>
       </div>
@@ -90,9 +93,9 @@ export default function Hero() {
             <span className="hero-logo-text">DevRealm</span>
             <span className="hero-logo-glow">.</span>
           </div>
-          
+
           {/* Botón hamburguesa - NUEVA CLASE */}
-          <button 
+          <button
             className={`hero-hamburger ${isMenuOpen ? 'hero-open' : ''}`}
             onClick={toggleMenu}
             aria-label="Menú"
@@ -101,7 +104,7 @@ export default function Hero() {
             <span></span>
             <span></span>
           </button>
-          
+
           {/* Enlaces de navegación - NUEVAS CLASES */}
           <div className={`hero-nav-links ${isMenuOpen ? 'hero-mobile-open' : ''}`}>
             <a href="#features" className="hero-nav-link" onClick={closeMenu}>
@@ -137,11 +140,11 @@ export default function Hero() {
             <span className="badge-rune">ᛟ</span>
             <span>Proyecto en Construccion</span>
           </div>
-          
+
           <h1 className="hero-title">
             Aquí es donde el
             <br />
-           código se forja.{' '}
+            código se forja.{' '}
             <span className="hero-highlight">
               <span className="word-carousel">
                 {words.map((word, index) => (
@@ -156,15 +159,15 @@ export default function Hero() {
               <div className="highlight-aura"></div>
             </span>
           </h1>
-          
+
           <p className="hero-description">
             Únete al reino donde desarrolladores épicos construyen su legado
             a través de batallas de código, sabiduría compartida y alianzas
             poderosas. Tu saga comienza aquí.
           </p>
-          
+
           <div className="hero-actions">
-              <Link to="/register" className="hero-cta-primary">
+            <Link to="/register" className="hero-cta-primary">
               <div className="cta-bg-effect"></div>
               <span className="cta-icon">⚔</span>
               <span>Inicia sesión, únete a nosotros!</span>
@@ -175,7 +178,7 @@ export default function Hero() {
               <span>Explorar Proyectos</span>
             </Link>
           </div>
-          
+
           <div className="hero-stats">
             <div className="stat">
               <div className="stat-icon">👑</div>
@@ -206,9 +209,10 @@ export default function Hero() {
           <div className="visual-container">
             {/* Aura de poder */}
             <div className="profile-aura"></div>
-            
+
             {/* Link que envuelve toda la card */}
-            <Link to="/portafolio" className="profile-card-link">
+
+            <Link to={profile?.username ? `/profile/${profile.username}` : "/"} className="profile-card-link">
               <div className="profile-mockup">
                 <div className="profile-frame">
                   <div className="frame-corner tl">╔</div>
@@ -216,7 +220,7 @@ export default function Hero() {
                   <div className="frame-corner bl">╚</div>
                   <div className="frame-corner br">╝</div>
                 </div>
-                
+
                 <div className="profile-header">
                   <div className="level-badge">
                     <span className="level-text">LVL</span>
@@ -226,11 +230,11 @@ export default function Hero() {
                     <div className="power-fill"></div>
                   </div>
                 </div>
-                
+
                 <div className="profile-content">
                   <div className="avatar-container">
                     <div className="avatar-frame">
-                      <img 
+                      <img
                         src="https://github.com/roberto3101.png"
                         alt="Avatar Roberto"
                         className="profile-avatar"
@@ -248,7 +252,7 @@ export default function Hero() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="quest-card">
                     <div className="quest-header">
                       <span className="quest-icon">🗡</span>

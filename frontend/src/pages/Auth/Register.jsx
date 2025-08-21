@@ -40,16 +40,21 @@ export default function Register() {
 
     setLoading(true);
     try {
-      await axios.post(
-        `${import.meta.env.VITE_API_URL}/auth/register`,
-        { email: form.email, password: form.password }
-      );
+   const response = await axios.post(
+  `${import.meta.env.VITE_API_URL}/auth/register`,
+  { email: form.email, password: form.password }
+);
 
-      /* OK → pedir código */
-      navigate(
-        `/verify-email?email=${encodeURIComponent(form.email)}`,
-        { replace: true }
-      );
+/* Si hay token = login directo, si no = verificación */
+if (response.data.token) {
+  localStorage.setItem("jwt", response.data.token);
+  navigate("/create-profile", { replace: true });
+} else {
+  navigate(
+    `/verify-email?email=${encodeURIComponent(form.email)}`,
+    { replace: true }
+  );
+}
     } catch (err) {
       const msg =
         err.response?.data?.msg ||
