@@ -1,16 +1,14 @@
 import fs from "fs/promises";
-import { dirname, resolve } from "path";
+import { dirname, resolve, join } from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-
-
-const dataDir = process.env.NODE_ENV === "production" 
-  ? "/var/www/RedSocial/data"
-  : path.join(__dirname, "data");
+const DATA_DIR = process.env.NODE_ENV === "production" 
+  ? "/var/www/RedSocial/backend/data"
+  : join(__dirname, "data");
   
-const FILE      = resolve(DATA_DIR, "users.json");
+const FILE = resolve(DATA_DIR, "users.json");
 
 /* ---------- Helpers de disco ---------- */
 async function load() {
