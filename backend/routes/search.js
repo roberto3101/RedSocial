@@ -11,11 +11,16 @@ const router = Router();
 
 function readProfiles() {
   try {
-    if (!fs.existsSync(profilesPath)) return [];
+    if (!fs.existsSync(profilesPath)) {
+      console.log("❌ Archivo profiles.json NO existe en:", profilesPath);
+      return [];
+    }
     const raw = fs.readFileSync(profilesPath, "utf8");
     const profiles = JSON.parse(raw);
+    console.log("📁 Profiles leídos correctamente, total:", profiles.length);
     return Array.isArray(profiles) ? profiles : [];
-  } catch {
+  } catch (error) {
+    console.log("🚨 Error leyendo profiles:", error.message);
     return [];
   }
 }
@@ -35,17 +40,42 @@ router.get("/", (req, res) => {
   const { q = "", type = "users" } = req.query;
   const query = q.toLowerCase().trim();
 
-  if (!query) return res.json([]);
+  console.log("🔍 Search request - Query:", query, "Type:", type);
+
+  if (!query) {
+    console.log("❌ Query vacío, retornando array vacío");
+    return res.json([]);
+  }
 
   if (type === "users") {
+    console.log("👥 Buscando usuarios...");
+    
     const profiles = readProfiles();
+    console.log("📊 Total profiles disponibles:", profiles.length);
+    
+    if (profiles.length > 0) {
+      console.log("📝 Ejemplo del primer profile:", {
+        username: profiles[0]?.username,
+        firstName: profiles[0]?.firstName,
+        lastName: profiles[0]?.lastName,
+        hasAvatar: !!profiles[0]?.avatar
+      });
+    }
+    
     const results = profiles
       .filter(
-        (p) =>
-          (p.username && p.username.toLowerCase().includes(query)) ||
-          (p.firstName && p.firstName.toLowerCase().includes(query)) ||
-          (p.lastName && p.lastName.toLowerCase().includes(query)) ||
-          (p.email && p.email.toLowerCase().includes(query))
+        (p) => {
+          const matches = (p.username && p.username.toLowerCase().includes(query)) ||
+                         (p.firstName && p.firstName.toLowerCase().includes(query)) ||
+                         (p.lastName && p.lastName.toLowerCase().includes(query)) ||
+                         (p.email && p.email.toLowerCase().includes(query));
+          
+          if (matches) {
+            console.log("✅ Match encontrado:", p.username, p.firstName, p.lastName);
+          }
+          
+          return matches;
+        }
       )
       .map((p) => ({
         username: p.username,
@@ -56,10 +86,15 @@ router.get("/", (req, res) => {
       }))
       .slice(0, 7);
 
+    console.log("🎯 Resultados finales:", results.length, "usuarios");
+    console.log("📋 Results completos:", results);
+    
     return res.json(Array.isArray(results) ? results : []);
   }
 
   if (type === "posts") {
+    console.log("📝 Buscando posts...");
+    
     const posts = readPosts();
     const results = posts
       .filter(
@@ -73,12 +108,12 @@ router.get("/", (req, res) => {
       }))
       .slice(0, 7);
 
+    console.log("📝 Posts encontrados:", results.length);
     return res.json(Array.isArray(results) ? results : []);
   }
 
+  console.log("❓ Tipo no reconocido:", type);
   res.json([]);
 });
 
 export default router;
-
-//backend\routes\search.js

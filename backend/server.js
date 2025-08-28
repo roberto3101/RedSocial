@@ -97,8 +97,9 @@ app.use(passport.session());
 
 // ─────────── Carpeta de uploads ───────────
 const uploadDir = process.env.NODE_ENV === "production"
-  ? "/tmp/uploads"
-  : path.resolve("./uploads"); // ← ¡usa ruta absoluta!
+  ? "/var/www/RedSocial/uploads"
+  : path.resolve("./uploads");
+// ← ¡usa ruta absoluta!
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
 // Esto permite acceder a las imágenes por http://localhost:3001/uploads/xxxx.jpg

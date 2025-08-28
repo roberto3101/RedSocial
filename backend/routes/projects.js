@@ -5,7 +5,7 @@ import path from "path";
 
 const router = Router();
 const PROJECTS_FILE = process.env.NODE_ENV === "production"
-  ? "/tmp/projects.json"
+  ? "/var/www/RedSocial/data/projects.json"
   : path.resolve("./data/projects.json");
 
 // Asegura la carpeta y archivo

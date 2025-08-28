@@ -6,7 +6,7 @@ import { verifyToken } from "../middleware/auth.js";
 
 const router = Router();
 const filePath = process.env.NODE_ENV === "production"
-  ? "/tmp/posts.json"
+  ? "/var/www/RedSocial/data/posts.json"
   : path.resolve("data/posts.json");
 
 const readPosts = () => {

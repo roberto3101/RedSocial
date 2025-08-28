@@ -6,9 +6,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Lógica para manejar rutas en desarrollo y producción
-const dataDir = process.env.NODE_ENV === "production" 
-  ? "/tmp"
-  : path.join(__dirname, "data");
+const DATA_DIR = process.env.NODE_ENV === "production"
+  ? "/var/www/RedSocial/data"
+  : resolve(__dirname, "..", "data");
 const file = path.join(dataDir, "profiles.json");
 
 async function read() {
