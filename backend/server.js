@@ -31,10 +31,11 @@ const PORT = process.env.PORT || 3001;
 // Usar HTTPS si existen certificados, sino HTTP
 let server;
 try {
-  if (fs.existsSync('key.pem') && fs.existsSync('cert.pem')) {
+  if (fs.existsSync('/etc/letsencrypt/live/roberto3101.duckdns.org/privkey.pem') && 
+      fs.existsSync('/etc/letsencrypt/live/roberto3101.duckdns.org/fullchain.pem')) {
     server = https.createServer({
-      key: fs.readFileSync('key.pem'),
-      cert: fs.readFileSync('cert.pem')
+      key: fs.readFileSync('/etc/letsencrypt/live/roberto3101.duckdns.org/privkey.pem'),
+      cert: fs.readFileSync('/etc/letsencrypt/live/roberto3101.duckdns.org/fullchain.pem')
     }, app);
   } else {
     server = http.createServer(app);
@@ -116,7 +117,7 @@ app.post("/api/upload-image", upload.single("image"), (req, res) => {
   let baseUrl;
   if (process.env.NODE_ENV === "production") {
     // Cambia esto solo si usas S3/CloudFront en el futuro
-    baseUrl = "https://165.227.66.41:3001";
+    baseUrl = "https://roberto3101.duckdns.org:3001";
   } else {
     // LOCAL: ejemplo http://localhost:3001
     baseUrl = `${req.protocol}://${req.headers.host}`;
