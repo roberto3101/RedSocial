@@ -118,7 +118,7 @@ app.post("/api/upload-image", upload.single("image"), (req, res) => {
   let baseUrl;
   if (process.env.NODE_ENV === "production") {
     // Cambia esto solo si usas S3/CloudFront en el futuro
-baseUrl = "https://roberto3101.duckdns.org";
+    baseUrl = "https://roberto3101.duckdns.org:3001";
   } else {
     // LOCAL: ejemplo http://localhost:3001
     baseUrl = `${req.protocol}://${req.headers.host}`;
